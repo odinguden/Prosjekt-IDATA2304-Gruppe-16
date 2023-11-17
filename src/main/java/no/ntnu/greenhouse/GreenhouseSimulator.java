@@ -1,20 +1,25 @@
 package no.ntnu.greenhouse;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import no.ntnu.listeners.greenhouse.NodeStateListener;
+import no.ntnu.sigve.client.Client;
+import no.ntnu.sigve.client.MessageObserver;
 import no.ntnu.tools.Logger;
 
 /**
  * Application entrypoint - a simulator for a greenhouse.
  */
-public class GreenhouseSimulator {
+public class GreenhouseSimulator implements MessageObserver {
   private final Map<Integer, SensorActuatorNode> nodes = new HashMap<>();
 
   private final List<PeriodicSwitch> periodicSwitches = new LinkedList<>();
   private final boolean fake;
+
+  private Client client;
 
   /**
    * Create a greenhouse simulator.
@@ -66,7 +71,15 @@ public class GreenhouseSimulator {
   }
 
   private void initiateRealCommunication() {
-    // TODO - here you can set up the TCP or UDP communication
+    try {
+      this.client = new Client("localhost", 8080);
+      client.addObserver(this);
+      Logger.info("Client connected");
+      client.sendOutgoingMessage("Test");
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
   }
 
   private void initiateFakePeriodicSwitches() {
@@ -103,5 +116,12 @@ public class GreenhouseSimulator {
     for (SensorActuatorNode node : nodes.values()) {
       node.addStateListener(listener);
     }
+  }
+
+  @Override
+  public void update(String message) {
+    System.out.println("Help");
+    Logger.infoNoNewline("We got new message : ");
+    Logger.info(message);
   }
 }
