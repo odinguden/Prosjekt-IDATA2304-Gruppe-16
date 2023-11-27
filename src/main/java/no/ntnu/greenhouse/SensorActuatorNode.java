@@ -9,6 +9,7 @@ import no.ntnu.listeners.common.ActuatorListener;
 import no.ntnu.listeners.common.CommunicationChannelListener;
 import no.ntnu.listeners.greenhouse.NodeStateListener;
 import no.ntnu.listeners.greenhouse.SensorListener;
+import no.ntnu.network.NodeClient;
 import no.ntnu.tools.Logger;
 
 /**
@@ -25,6 +26,7 @@ public class SensorActuatorNode implements ActuatorListener, CommunicationChanne
   private final List<SensorListener> sensorListeners = new LinkedList<>();
   private final List<ActuatorListener> actuatorListeners = new LinkedList<>();
   private final List<NodeStateListener> stateListeners = new LinkedList<>();
+  private NodeClient client;
 
   Timer sensorReadingTimer;
 
@@ -40,6 +42,7 @@ public class SensorActuatorNode implements ActuatorListener, CommunicationChanne
   public SensorActuatorNode(int id) {
     this.id = id;
     this.running = false;
+    this.client = new NodeClient();
   }
 
   /**

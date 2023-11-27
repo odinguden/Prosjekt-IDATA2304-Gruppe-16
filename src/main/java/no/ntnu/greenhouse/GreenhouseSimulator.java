@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import no.ntnu.listeners.greenhouse.NodeStateListener;
+import no.ntnu.network.GreenhouseServer;
 import no.ntnu.sigve.client.Client;
 import no.ntnu.sigve.client.MessageObserver;
 import no.ntnu.tools.Logger;
@@ -19,6 +20,8 @@ public class GreenhouseSimulator implements MessageObserver {
   private final List<PeriodicSwitch> periodicSwitches = new LinkedList<>();
   private final boolean fake;
 
+  private GreenhouseServer server;
+
   private Client client;
 
   /**
@@ -29,6 +32,7 @@ public class GreenhouseSimulator implements MessageObserver {
    */
   public GreenhouseSimulator(boolean fake) {
     this.fake = fake;
+    this.server = new GreenhouseServer();
   }
 
   /**
