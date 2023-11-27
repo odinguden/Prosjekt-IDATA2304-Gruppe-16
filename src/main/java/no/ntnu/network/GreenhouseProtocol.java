@@ -2,20 +2,26 @@ package no.ntnu.network;
 
 import java.net.InetAddress;
 
+import no.ntnu.sigve.communication.Message;
 import no.ntnu.sigve.server.Protocol;
 import no.ntnu.sigve.server.Server;
 
 public class GreenhouseProtocol implements Protocol {
-	private Server server = null;
 
 	@Override
-	public void receiveMessage(String message, InetAddress address) {
-		System.out.println("?");
-		server.route(address, "Pong!");
-		System.out.println("!");
+	public void receiveMessage(Server arg0, Message<?> arg1) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'receiveMessage'");
 	}
 
-	public void setServer(Server server) {
-		this.server = server;
+	@Override
+	public void onClientConnect() {
+		
 	}
+
+	@Override
+	public void onClientDisconnect() {
+
+	}
+
 }
