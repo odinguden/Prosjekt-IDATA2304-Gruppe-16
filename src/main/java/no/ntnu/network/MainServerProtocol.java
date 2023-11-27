@@ -1,11 +1,9 @@
 package no.ntnu.network;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
 import no.ntnu.network.message.ClientType;
 import no.ntnu.network.message.ConnectionMessage;
 import no.ntnu.sigve.communication.Message;
@@ -15,12 +13,10 @@ import no.ntnu.tools.Logger;
 
 public class MainServerProtocol implements Protocol {
 	private Map<UUID, ClientType> clientTypeMapping;
-	private List<UUID> controlpanelNodes;
 
 	public MainServerProtocol() {
 		super();
 		this.clientTypeMapping = new HashMap<>();
-		this.controlpanelNodes = new ArrayList<>();
 	}
 
 	@Override
@@ -30,7 +26,9 @@ public class MainServerProtocol implements Protocol {
 		if (destination == null) {
 			handleMessageIntendedForServer(server, message);
 		} else if (destination.toString().equals("0")) {
-			server.broadcast(message);
+			broadcastToAllControlPanels(server, message);
+		} else if (destination.toString().equals("1")) {
+			broadcastToAllNodes(server, message);
 		} else {
 			server.route(message);
 		}
@@ -49,6 +47,10 @@ public class MainServerProtocol implements Protocol {
 	private void handleMessageIntendedForServer(Server server, Message<?> message) {
 		if (message instanceof ConnectionMessage) {
 			this.handleClientAssignment((ConnectionMessage) message);
+		} else {
+			Logger.error(String.format(
+				"Received unknown message from %s, discarding.",
+				message.getSource().toString()));
 		}
 	}
 
@@ -77,8 +79,34 @@ public class MainServerProtocol implements Protocol {
 		this.clientTypeMapping.remove(clientId);
 	}
 
-	private void broadcastToAllControlPanels(Server server, Message message) {
+	/**
+	 * Broadcasts a message only to control panels
+	 *
+	 * @param server the server with which to interact
+	 * @param message the message to be broadcasted
+	 */
+	private void broadcastToAllControlPanels(Server server, Message<?> message) {
+		List<UUID> controlPanels = clientTypeMapping.entrySet().stream()
+			.filter(set -> set.getValue() == ClientType.CONTROL_PANEL)
+			.map(Map.Entry::getKey)
+			.toList();
 
+		server.broadcastFiltered(message, controlPanels::contains);
+	}
+
+	/**
+	 * Broadcasts a message only to nodes
+	 *
+	 * @param server the server with which to interact
+	 * @param message the message to be broadcasted
+	 */
+	private void broadcastToAllNodes(Server server, Message<?> message) {
+		List<UUID> controlPanels = clientTypeMapping.entrySet().stream()
+			.filter(set -> set.getValue() == ClientType.NODE)
+			.map(Map.Entry::getKey)
+			.toList();
+
+		server.broadcastFiltered(message, controlPanels::contains);
 	}
 
 }
