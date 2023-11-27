@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.UUID;
 import no.ntnu.listeners.common.ActuatorListener;
 import no.ntnu.listeners.common.CommunicationChannelListener;
 import no.ntnu.listeners.greenhouse.NodeStateListener;
@@ -17,7 +18,7 @@ import no.ntnu.tools.Logger;
 public class SensorActuatorNode implements ActuatorListener, CommunicationChannelListener {
   // How often to generate new sensor values, in seconds.
   private static final long SENSING_DELAY = 5000;
-  private final int id;
+  private final UUID id;
 
   private final List<Sensor> sensors = new LinkedList<>();
   private final ActuatorCollection actuators = new ActuatorCollection();
@@ -37,7 +38,8 @@ public class SensorActuatorNode implements ActuatorListener, CommunicationChanne
    *
    * @param id A unique ID of the node
    */
-  public SensorActuatorNode(int id) {
+  public SensorActuatorNode(UUID id) {
+    //TODO: Make this not take the ID in the constructor, and instead receive it from the server
     this.id = id;
     this.running = false;
   }
@@ -47,7 +49,7 @@ public class SensorActuatorNode implements ActuatorListener, CommunicationChanne
    *
    * @return the ID
    */
-  public int getId() {
+  public UUID getId() {
     return id;
   }
 
@@ -221,7 +223,7 @@ public class SensorActuatorNode implements ActuatorListener, CommunicationChanne
   }
 
   @Override
-  public void actuatorUpdated(int nodeId, Actuator actuator) {
+  public void actuatorUpdated(UUID nodeId, Actuator actuator) {
     actuator.applyImpact(this);
     notifyActuatorChange(actuator);
   }

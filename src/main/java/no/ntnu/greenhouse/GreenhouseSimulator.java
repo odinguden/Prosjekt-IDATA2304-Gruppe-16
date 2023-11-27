@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import no.ntnu.listeners.greenhouse.NodeStateListener;
 import no.ntnu.tools.Logger;
 
@@ -11,7 +12,7 @@ import no.ntnu.tools.Logger;
  * Application entrypoint - a simulator for a greenhouse.
  */
 public class GreenhouseSimulator {
-  private final Map<Integer, SensorActuatorNode> nodes = new HashMap<>();
+  private final Map<UUID, SensorActuatorNode> nodes = new HashMap<>();
 
   private final List<PeriodicSwitch> periodicSwitches = new LinkedList<>();
   private final boolean fake;
@@ -70,8 +71,8 @@ public class GreenhouseSimulator {
   }
 
   private void initiateFakePeriodicSwitches() {
-    periodicSwitches.add(new PeriodicSwitch("Window DJ", nodes.get(1), 2, 20000));
-    periodicSwitches.add(new PeriodicSwitch("Heater DJ", nodes.get(2), 7, 8000));
+    periodicSwitches.add(new PeriodicSwitch("Window DJ", nodes.get(UUID.fromString("1")), 2, 20000));
+    periodicSwitches.add(new PeriodicSwitch("Heater DJ", nodes.get(UUID.fromString("2")), 7, 8000));
   }
 
   /**

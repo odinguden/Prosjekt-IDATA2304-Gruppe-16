@@ -1,6 +1,7 @@
 package no.ntnu.listeners.controlpanel;
 
 import java.util.List;
+import java.util.UUID;
 import no.ntnu.controlpanel.SensorActuatorNodeInfo;
 import no.ntnu.greenhouse.SensorReading;
 
@@ -25,7 +26,7 @@ public interface GreenhouseEventListener {
    *
    * @param nodeId ID of the node which has disappeared (removed)
    */
-  void onNodeRemoved(int nodeId);
+  void onNodeRemoved(UUID nodeId);
 
   /**
    * This event is fired when new sensor data is received from a node.
@@ -33,7 +34,7 @@ public interface GreenhouseEventListener {
    * @param nodeId  ID of the node
    * @param sensors List of all current sensor values
    */
-  void onSensorData(int nodeId, List<SensorReading> sensors);
+  void onSensorData(UUID nodeId, List<SensorReading> sensors);
 
   /**
    * This event is fired when an actuator changes state.
@@ -42,5 +43,5 @@ public interface GreenhouseEventListener {
    * @param actuatorId ID of the actuator
    * @param isOn  When true, actuator is on; off when false.
    */
-  void onActuatorStateChanged(int nodeId, int actuatorId, boolean isOn);
+  void onActuatorStateChanged(UUID nodeId, int actuatorId, boolean isOn);
 }

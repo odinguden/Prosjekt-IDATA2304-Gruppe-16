@@ -1,5 +1,7 @@
 package no.ntnu.controlpanel;
 
+import java.util.UUID;
+
 /**
  * A communication channel for disseminating control commands to the sensor nodes
  * (sending commands to the server) and receiving notifications about events.
@@ -13,7 +15,7 @@ public interface CommunicationChannel {
    * @param actuatorId Node-wide unique ID of the actuator
    * @param isOn       When true, actuator must be turned on; off when false.
    */
-  void sendActuatorChange(int nodeId, int actuatorId, boolean isOn);
+  void sendActuatorChange(UUID nodeId, int actuatorId, boolean isOn);
 
   /**
    * Open the communication channel.

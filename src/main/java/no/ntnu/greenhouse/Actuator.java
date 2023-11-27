@@ -2,6 +2,7 @@ package no.ntnu.greenhouse;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import no.ntnu.listeners.common.ActuatorListener;
 
 /**
@@ -11,7 +12,7 @@ import no.ntnu.listeners.common.ActuatorListener;
 public class Actuator {
   private static int nextId = 1;
   private final String type;
-  private final int nodeId;
+  private final UUID nodeId;
   private final int id;
   private Map<String, Double> impacts = new HashMap<>();
 
@@ -25,7 +26,7 @@ public class Actuator {
    * @param type   The type of the actuator.
    * @param nodeId ID of the node to which this actuator is connected.
    */
-  public Actuator(String type, int nodeId) {
+  public Actuator(String type, UUID nodeId) {
     this.type = type;
     this.nodeId = nodeId;
     this.on = false;
@@ -39,7 +40,7 @@ public class Actuator {
    * @param type   The type of the actuator.
    * @param nodeId ID of the node to which this actuator is connected.
    */
-  public Actuator(int id, String type, int nodeId) {
+  public Actuator(int id, String type, UUID nodeId) {
     this.type = type;
     this.nodeId = nodeId;
     this.on = false;
@@ -167,7 +168,7 @@ public class Actuator {
     return id;
   }
 
-  public int getNodeId() {
+  public UUID getNodeId() {
     return nodeId;
   }
 

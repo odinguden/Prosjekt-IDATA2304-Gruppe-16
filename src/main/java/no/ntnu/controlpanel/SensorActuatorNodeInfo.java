@@ -1,5 +1,6 @@
 package no.ntnu.controlpanel;
 
+import java.util.UUID;
 import no.ntnu.greenhouse.Actuator;
 import no.ntnu.greenhouse.ActuatorCollection;
 
@@ -9,10 +10,10 @@ import no.ntnu.greenhouse.ActuatorCollection;
  */
 public class SensorActuatorNodeInfo {
 
-  private final int nodeId;
+  private final UUID nodeId;
   private final ActuatorCollection actuators = new ActuatorCollection();
 
-  public SensorActuatorNodeInfo(int nodeId) {
+  public SensorActuatorNodeInfo(UUID nodeId) {
     this.nodeId = nodeId;
   }
 
@@ -25,7 +26,7 @@ public class SensorActuatorNodeInfo {
    *
    * @return The unique ID of the node
    */
-  public int getId() {
+  public UUID getId() {
     return nodeId;
   }
 

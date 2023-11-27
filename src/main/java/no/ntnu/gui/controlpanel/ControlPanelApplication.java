@@ -3,6 +3,7 @@ package no.ntnu.gui.controlpanel;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
@@ -35,10 +36,10 @@ public class ControlPanelApplication extends Application implements GreenhouseEv
 
   private TabPane nodeTabPane;
   private Scene mainScene;
-  private final Map<Integer, SensorPane> sensorPanes = new HashMap<>();
-  private final Map<Integer, ActuatorPane> actuatorPanes = new HashMap<>();
-  private final Map<Integer, SensorActuatorNodeInfo> nodeInfos = new HashMap<>();
-  private final Map<Integer, Tab> nodeTabs = new HashMap<>();
+  private final Map<UUID, SensorPane> sensorPanes = new HashMap<>();
+  private final Map<UUID, ActuatorPane> actuatorPanes = new HashMap<>();
+  private final Map<UUID, SensorActuatorNodeInfo> nodeInfos = new HashMap<>();
+  private final Map<UUID, Tab> nodeTabs = new HashMap<>();
 
   /**
    * Application entrypoint for the GUI of a control panel.
@@ -90,7 +91,7 @@ public class ControlPanelApplication extends Application implements GreenhouseEv
   }
 
   @Override
-  public void onNodeRemoved(int nodeId) {
+  public void onNodeRemoved(UUID nodeId) {
     Tab nodeTab = nodeTabs.get(nodeId);
     if (nodeTab != null) {
       Platform.runLater(() -> {
@@ -112,7 +113,7 @@ public class ControlPanelApplication extends Application implements GreenhouseEv
   }
 
   @Override
-  public void onSensorData(int nodeId, List<SensorReading> sensors) {
+  public void onSensorData(UUID nodeId, List<SensorReading> sensors) {
     Logger.info("Sensor data from node " + nodeId);
     SensorPane sensorPane = sensorPanes.get(nodeId);
     if (sensorPane != null) {
@@ -123,7 +124,7 @@ public class ControlPanelApplication extends Application implements GreenhouseEv
   }
 
   @Override
-  public void onActuatorStateChanged(int nodeId, int actuatorId, boolean isOn) {
+  public void onActuatorStateChanged(UUID nodeId, int actuatorId, boolean isOn) {
     String state = isOn ? "ON" : "off";
     Logger.info("actuator[" + actuatorId + "] on node " + nodeId + " is " + state);
     ActuatorPane actuatorPane = actuatorPanes.get(nodeId);
@@ -144,7 +145,7 @@ public class ControlPanelApplication extends Application implements GreenhouseEv
     }
   }
 
-  private Actuator getStoredActuator(int nodeId, int actuatorId) {
+  private Actuator getStoredActuator(UUID nodeId, int actuatorId) {
     Actuator actuator = null;
     SensorActuatorNodeInfo nodeInfo = nodeInfos.get(nodeId);
     if (nodeInfo != null) {
@@ -153,13 +154,13 @@ public class ControlPanelApplication extends Application implements GreenhouseEv
     return actuator;
   }
 
-  private void forgetNodeInfo(int nodeId) {
+  private void forgetNodeInfo(UUID nodeId) {
     sensorPanes.remove(nodeId);
     actuatorPanes.remove(nodeId);
     nodeInfos.remove(nodeId);
   }
 
-  private void removeNodeTab(int nodeId, Tab nodeTab) {
+  private void removeNodeTab(UUID nodeId, Tab nodeTab) {
     nodeTab.getTabPane().getTabs().remove(nodeTab);
     nodeTabs.remove(nodeId);
   }

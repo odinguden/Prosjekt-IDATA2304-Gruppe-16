@@ -1,5 +1,6 @@
 package no.ntnu.run;
 
+import java.util.UUID;
 import no.ntnu.controlpanel.CommunicationChannel;
 import no.ntnu.controlpanel.ControlPanelLogic;
 import no.ntnu.controlpanel.FakeCommunicationChannel;
@@ -64,27 +65,31 @@ public class ControlPanelStarter {
   private CommunicationChannel initiateFakeSpawner(ControlPanelLogic logic) {
     // Here we pretend that some events will be received with a given delay
     FakeCommunicationChannel spawner = new FakeCommunicationChannel(logic);
+    UUID id4 = UUID.fromString("4");
+    UUID id1 = UUID.fromString("1");
+    UUID id8 = UUID.fromString("8");
+
     logic.setCommunicationChannel(spawner);
-    spawner.spawnNode("4;3_window", 2);
-    spawner.spawnNode("1", 3);
-    spawner.spawnNode("1", 4);
-    spawner.advertiseSensorData("4;temperature=27.4 °C,temperature=26.8 °C,humidity=80 %", 4);
-    spawner.spawnNode("8;2_heater", 5);
-    spawner.advertiseActuatorState(4, 1, true, 5);
-    spawner.advertiseActuatorState(4,  1, false, 6);
-    spawner.advertiseActuatorState(4,  1, true, 7);
-    spawner.advertiseActuatorState(4,  2, true, 7);
-    spawner.advertiseActuatorState(4,  1, false, 8);
-    spawner.advertiseActuatorState(4,  2, false, 8);
-    spawner.advertiseActuatorState(4,  1, true, 9);
-    spawner.advertiseActuatorState(4,  2, true, 9);
-    spawner.advertiseSensorData("4;temperature=22.4 °C,temperature=26.0 °C,humidity=81 %", 9);
-    spawner.advertiseSensorData("1;humidity=80 %,humidity=82 %", 10);
-    spawner.advertiseRemovedNode(8, 11);
-    spawner.advertiseRemovedNode(8, 12);
-    spawner.advertiseSensorData("1;temperature=25.4 °C,temperature=27.0 °C,humidity=67 %", 13);
-    spawner.advertiseSensorData("4;temperature=25.4 °C,temperature=27.0 °C,humidity=82 %", 14);
-    spawner.advertiseSensorData("4;temperature=25.4 °C,temperature=27.0 °C,humidity=82 %", 16);
+    spawner.spawnNode(String.format("%s;3_window", id4), 2);
+    spawner.spawnNode(id1.toString(), 3);
+    spawner.spawnNode(id1.toString(), 4);
+    spawner.advertiseSensorData(String.format("%s;temperature=27.4 °C,temperature=26.8 °C,humidity=80 %%", id4), 4);
+    spawner.spawnNode(String.format("%s;2_heater", id8), 5);
+    spawner.advertiseActuatorState(id4, 1, true, 5);
+    spawner.advertiseActuatorState(id4, 1, false, 6);
+    spawner.advertiseActuatorState(id4, 1, true, 7);
+    spawner.advertiseActuatorState(id4, 2, true, 7);
+    spawner.advertiseActuatorState(id4, 1, false, 8);
+    spawner.advertiseActuatorState(id4, 2, false, 8);
+    spawner.advertiseActuatorState(id4, 1, true, 9);
+    spawner.advertiseActuatorState(id4, 2, true, 9);
+    spawner.advertiseSensorData(String.format("%s;temperature=22.4 °C,temperature=26.0 °C,humidity=81 %%", id4), 9);
+    spawner.advertiseSensorData(String.format("%s;humidity=80 %%,humidity=82 %%", id1), 10);
+    spawner.advertiseRemovedNode(id8,11);
+    spawner.advertiseRemovedNode(id8,12);
+    spawner.advertiseSensorData(String.format("%s;temperature=25.4 °C,temperature=27.0 °C,humidity=67 %%", id1), 13);
+    spawner.advertiseSensorData(String.format("%s;temperature=25.4 °C,temperature=27.0 °C,humidity=82 %%", id4), 14);
+    spawner.advertiseSensorData(String.format("%s;temperature=25.4 °C,temperature=27.0 °C,humidity=82 %%", id4), 16);
     return spawner;
   }
 

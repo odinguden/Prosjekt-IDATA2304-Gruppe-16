@@ -1,6 +1,7 @@
 package no.ntnu.gui.greenhouse;
 
 import java.util.List;
+import java.util.UUID;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
@@ -26,6 +27,8 @@ public class NodeGuiWindow extends Stage implements SensorListener, ActuatorList
   private ActuatorPane actuatorPane;
   private SensorPane sensorPane;
 
+  private static int nodeGuiPosition = 1;
+
   /**
    * Create a GUI window for a specific node.
    *
@@ -40,9 +43,14 @@ public class NodeGuiWindow extends Stage implements SensorListener, ActuatorList
     setPositionAndSize();
   }
 
+  private static int nextInt() {
+    return nodeGuiPosition++;
+  }
+
   private void setPositionAndSize() {
-    setX((node.getId() - 1) * HORIZONTAL_OFFSET);
-    setY(node.getId() * VERTICAL_OFFSET);
+    int i = nextInt();
+    setX((i - 1) * HORIZONTAL_OFFSET);
+    setY(i * VERTICAL_OFFSET);
     setMinWidth(WINDOW_HEIGHT);
     setMinHeight(WINDOW_WIDTH);
   }
@@ -73,7 +81,7 @@ public class NodeGuiWindow extends Stage implements SensorListener, ActuatorList
   }
 
   @Override
-  public void actuatorUpdated(int nodeId, Actuator actuator) {
+  public void actuatorUpdated(UUID nodeId, Actuator actuator) {
     if (actuatorPane != null) {
       actuatorPane.update(actuator);
     }

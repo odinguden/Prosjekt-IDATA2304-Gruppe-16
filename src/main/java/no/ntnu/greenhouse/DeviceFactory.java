@@ -1,5 +1,7 @@
 package no.ntnu.greenhouse;
 
+import java.util.UUID;
+
 /**
  * A factory for producing sensors and actuators of specific types.
  */
@@ -13,8 +15,6 @@ public class DeviceFactory {
   private static final double NORMAL_GREENHOUSE_HUMIDITY = 80;
   private static final String HUMIDITY_UNIT = "%";
   private static final String SENSOR_TYPE_TEMPERATURE = "temperature";
-
-  private static int nextNodeId = 1;
 
   /**
    * Constructing the factory is not allowed.
@@ -93,7 +93,7 @@ public class DeviceFactory {
    * @param nodeId ID of the node to which this actuator will be connected
    * @return The window actuator
    */
-  public static Actuator createWindow(int nodeId) {
+  public static Actuator createWindow(UUID nodeId) {
     Actuator actuator = new Actuator("window", nodeId);
     actuator.setImpact(SENSOR_TYPE_TEMPERATURE, -5.0);
     actuator.setImpact("humidity", -10.0);
@@ -106,7 +106,7 @@ public class DeviceFactory {
    * @param nodeId ID of the node to which this actuator will be connected
    * @return The fan actuator
    */
-  public static Actuator createFan(int nodeId) {
+  public static Actuator createFan(UUID nodeId) {
     Actuator actuator = new Actuator("fan", nodeId);
     actuator.setImpact(SENSOR_TYPE_TEMPERATURE, -1.0);
     return actuator;
@@ -118,7 +118,7 @@ public class DeviceFactory {
    * @param nodeId ID of the node to which this actuator will be connected
    * @return The heater actuator
    */
-  public static Actuator createHeater(int nodeId) {
+  public static Actuator createHeater(UUID nodeId) {
     Actuator actuator = new Actuator("heater", nodeId);
     actuator.setImpact(SENSOR_TYPE_TEMPERATURE, 4.0);
     return actuator;
@@ -139,11 +139,14 @@ public class DeviceFactory {
 
   /**
    * Generate an integer that can be used as a unique ID of sensor/actuator nodes.
+   * @deprecated Make nodes generate without an ID, and instead get their ID from the server
    *
    * @return a Unique ID for sensor/actuator nodes
    */
-  private static int generateUniqueNodeId() {
-    return nextNodeId++;
+  @Deprecated(since = "2023.1.0", forRemoval = true)
+  private static UUID generateUniqueNodeId() {
+    //TODO: Make nodes generate without an ID, and instead get their ID from the server
+    return UUID.randomUUID();
   }
 
 }

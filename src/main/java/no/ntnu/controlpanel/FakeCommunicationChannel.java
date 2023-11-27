@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.UUID;
 import no.ntnu.greenhouse.Actuator;
 import no.ntnu.greenhouse.SensorReading;
 import no.ntnu.tools.Logger;
@@ -37,7 +38,7 @@ public class FakeCommunicationChannel implements CommunicationChannel {
     if (parts.length > 3) {
       throw new IllegalArgumentException("Incorrect specification format");
     }
-    int nodeId = parseIntegerOrError(parts[0], "Invalid node ID:" + parts[0]);
+    UUID nodeId = UUID.fromString(parts[0]);
     SensorActuatorNodeInfo info = new SensorActuatorNodeInfo(nodeId);
     if (parts.length == 2) {
       parseActuators(parts[1], info);
@@ -109,7 +110,7 @@ public class FakeCommunicationChannel implements CommunicationChannel {
     if (parts.length != 2) {
       throw new IllegalArgumentException("Incorrect specification format: " + specification);
     }
-    int nodeId = parseIntegerOrError(parts[0], "Invalid node ID:" + parts[0]);
+    UUID nodeId = UUID.fromString(parts[0]);
     List<SensorReading> sensors = parseSensors(parts[1]);
     Timer timer = new Timer();
     timer.schedule(new TimerTask() {
@@ -126,7 +127,7 @@ public class FakeCommunicationChannel implements CommunicationChannel {
    * @param nodeId ID of the removed node
    * @param delay  Delay in seconds
    */
-  public void advertiseRemovedNode(int nodeId, int delay) {
+  public void advertiseRemovedNode(UUID nodeId, int delay) {
     Timer timer = new Timer();
     timer.schedule(new TimerTask() {
       @Override
@@ -168,7 +169,7 @@ public class FakeCommunicationChannel implements CommunicationChannel {
    * @param on         When true, actuator is on; off when false.
    * @param delay      The delay in seconds after which the advertisement will be generated
    */
-  public void advertiseActuatorState(int nodeId, int actuatorId, boolean on, int delay) {
+  public void advertiseActuatorState(UUID nodeId, int actuatorId, boolean on, int delay) {
     Timer timer = new Timer();
     timer.schedule(new TimerTask() {
       @Override
@@ -179,7 +180,7 @@ public class FakeCommunicationChannel implements CommunicationChannel {
   }
 
   @Override
-  public void sendActuatorChange(int nodeId, int actuatorId, boolean isOn) {
+  public void sendActuatorChange(UUID nodeId, int actuatorId, boolean isOn) {
     String state = isOn ? "ON" : "off";
     Logger.info("Sending command to greenhouse: turn " + state + " actuator"
         + "[" + actuatorId + "] on node " + nodeId);

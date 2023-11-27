@@ -1,5 +1,6 @@
 package no.ntnu.listeners.common;
 
+import java.util.UUID;
 import no.ntnu.greenhouse.Actuator;
 
 /**
@@ -14,5 +15,5 @@ public interface ActuatorListener {
    * @param nodeId   ID of the node on which this actuator is placed
    * @param actuator The actuator that has changed its state
    */
-  void actuatorUpdated(int nodeId, Actuator actuator);
+  void actuatorUpdated(UUID nodeId, Actuator actuator);
 }
