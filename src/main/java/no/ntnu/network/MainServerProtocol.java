@@ -1,6 +1,8 @@
 package no.ntnu.network;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -13,17 +15,24 @@ import no.ntnu.tools.Logger;
 
 public class MainServerProtocol implements Protocol {
 	private Map<UUID, ClientType> clientTypeMapping;
+	private List<UUID> controlpanelNodes;
 
 	public MainServerProtocol() {
 		super();
 		this.clientTypeMapping = new HashMap<>();
+		this.controlpanelNodes = new ArrayList<>();
 	}
 
 	@Override
 	public void receiveMessage(Server server, Message<?> message) {
-		// If the client is trying to be assigned a type, it will send a ConnectionMessage.
-		if (message instanceof ConnectionMessage) {
-			this.handleClientAssignment((ConnectionMessage) message);
+		UUID destination = message.getDestination();
+
+		if (destination == null) {
+			handleMessageIntendedForServer(server, message);
+		} else if (destination.toString().equals("0")) {
+			server.broadcast(message);
+		} else {
+			server.route(message);
 		}
 	}
 
@@ -35,6 +44,12 @@ public class MainServerProtocol implements Protocol {
 	@Override
 	public void onClientDisconnect(Server server, UUID clientId) {
 		handleDisconnection(clientId);
+	}
+
+	private void handleMessageIntendedForServer(Server server, Message<?> message) {
+		if (message instanceof ConnectionMessage) {
+			this.handleClientAssignment((ConnectionMessage) message);
+		}
 	}
 
 	/**
@@ -60,6 +75,10 @@ public class MainServerProtocol implements Protocol {
 	 */
 	private void handleDisconnection(UUID clientId) {
 		this.clientTypeMapping.remove(clientId);
+	}
+
+	private void broadcastToAllControlPanels(Server server, Message message) {
+
 	}
 
 }
