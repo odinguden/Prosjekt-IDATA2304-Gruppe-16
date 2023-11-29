@@ -12,7 +12,7 @@ import no.ntnu.sigve.server.Server;
 import no.ntnu.tools.Logger;
 
 public class MainServerProtocol implements Protocol {
-	private Map<UUID, ClientType> clientTypeMapping;
+	private final Map<UUID, ClientType> clientTypeMapping;
 
 	public MainServerProtocol() {
 		super();
@@ -25,9 +25,9 @@ public class MainServerProtocol implements Protocol {
 
 		if (destination == null) {
 			handleMessageIntendedForServer(server, message);
-		} else if (destination.toString().equals("0")) {
+		} else if (destination.equals(StaticIds.CP_BROADCAST)) {
 			broadcastToAllControlPanels(server, message);
-		} else if (destination.toString().equals("1")) {
+		} else if (destination.equals(StaticIds.NODE_BROADCAST)) {
 			broadcastToAllNodes(server, message);
 		} else {
 			server.route(message);
@@ -45,8 +45,8 @@ public class MainServerProtocol implements Protocol {
 	}
 
 	private void handleMessageIntendedForServer(Server server, Message<?> message) {
-		if (message instanceof ConnectionMessage) {
-			this.handleClientAssignment((ConnectionMessage) message);
+		if (message instanceof ConnectionMessage connectionMessage) {
+			this.handleClientAssignment(connectionMessage);
 		} else {
 			Logger.error(String.format(
 				"Received unknown message from %s, discarding.",
