@@ -7,7 +7,9 @@ import java.util.UUID;
 
 import no.ntnu.listeners.common.ActuatorListener;
 import no.ntnu.listeners.greenhouse.SensorListener;
-
+import no.ntnu.network.StaticIds;
+import no.ntnu.network.message.NodeInfoMessage;
+import no.ntnu.network.message.NodeInfoMessage.NodeInfoPayload;
 import no.ntnu.sigve.client.Client;
 import no.ntnu.sigve.client.MessageObserver;
 import no.ntnu.sigve.communication.Message;
@@ -40,43 +42,17 @@ public class NodeCommunicationChannel implements ActuatorListener, SensorListene
 		//TODO
 	}
 
-	/**
-	 * Sends a message containing a list of the actuators and sensors to the control panel that requested it.<br>
-	 * The message is built up by several parts.<br>
-	 * each part is divided by ","<br>
-	 * <ul>
-	 * <li>The first four character are "INMS" to signify that it is a info message</li>
-	 * <li>The second part is the UUID of the node</li>
-	 * <li>Third part is the sensors contained in the node, this part is preceded by "sensors:" <br>
-	 * after this you will get all the sensors presented in the format of the sensor toString method divided by the "," character.</li>
-	 * <li>The last part are the actuators. these are preceded by "actuators:". <br>
-	 * After this you will get it presented in the format of actuator to string method preceded by the actuator ID, and divided
-	 *  by the "," character. </li>
-	 * <li></li>
-	 * </ul>
-	 * @param recipient the UUID of the controlPanel that should recive the info message. Leave as null to broadcast to all control panels.
+	/*
+	 * TODO:
 	 */
-	public void sendInfoMessage(UUID recipient) {
-		String content = "INMS" + client;
-		content = content + "," + client.getSessionId().toString();
-		ActuatorCollection actuatorCollection = node.getActuators();
-		List<Sensor> sensors = node.getSensors();
-		content = content +  "," + "sensors:";
-		for (Sensor sensor : sensors) {
-			content = content + "," + sensor.toString();
-		}
-		Iterator<Actuator> iterator = actuatorCollection.iterator();
-
-		content = content +  "," + "actuators:";
-		while (iterator.hasNext()) {
-			Actuator actuator = iterator.next();
-			content = content + "," + actuator.getId() + "," + actuator.toString();
-		}
+	public void SendInfoMessage(UUID recipient){
+		NodeInfoPayload payload = new NodeInfoPayload(node.getSensors(), node.getActuators());
+		UUID uuid = recipient;
 		if (recipient == null) {
-			broadcastToControlPanel(content);
-		} else {
-			client.sendOutgoingMessage(new Message(recipient, content));
+			uuid = StaticIds.CP_BROADCAST;
 		}
+		NodeInfoMessage message = new NodeInfoMessage(uuid, payload);
+		client.sendOutgoingMessage(message);
 	}
 
 	/**
@@ -111,9 +87,7 @@ public class NodeCommunicationChannel implements ActuatorListener, SensorListene
 		String message = null;
 		sensors.size();
 		for (Sensor sensor : sensors) {
-			sensor.getReading().getValue();
-			sensor.getReading().getType();
-			sensor.getReading().getUnit();
+			sensor.getReading().toString();
 		}
 		broadcastToControlPanel(message);
 		//TODO Send sensor updates
@@ -138,7 +112,7 @@ public class NodeCommunicationChannel implements ActuatorListener, SensorListene
 	private void broadcastToNode(String message) {
 		if (message != null) {
 			client.sendOutgoingMessage(
-				new Message<>(UUID.fromString("0"), message)
+				new Message<>(UUID.fromString("1"), message)
 			);
 		}
 	}

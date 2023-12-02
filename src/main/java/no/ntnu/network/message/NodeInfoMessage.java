@@ -1,7 +1,11 @@
 package no.ntnu.network.message;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.UUID;
+
+import no.ntnu.greenhouse.ActuatorCollection;
+import no.ntnu.greenhouse.Sensor;
 import no.ntnu.sigve.communication.Message;
 
 public class NodeInfoMessage extends Message<NodeInfoMessage.NodeInfoPayload> {
@@ -11,8 +15,5 @@ public class NodeInfoMessage extends Message<NodeInfoMessage.NodeInfoPayload> {
 	}
 
 	//TODO: Odin, implement this
-	public record NodeInfoPayload(
-			// Type someParam,
-			// AnotherType someOtherParam
-	) implements Serializable {}
+	public record NodeInfoPayload(List<Sensor> sensorList, ActuatorCollection actuators) implements Serializable {}
 }
