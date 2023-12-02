@@ -8,7 +8,11 @@ import java.util.UUID;
 import no.ntnu.listeners.common.ActuatorListener;
 import no.ntnu.listeners.greenhouse.SensorListener;
 import no.ntnu.network.StaticIds;
+import no.ntnu.network.message.ActuatorUpdateMessage;
 import no.ntnu.network.message.NodeInfoMessage;
+import no.ntnu.network.message.SensorUpdateMessage;
+import no.ntnu.network.message.ActuatorUpdateMessage.ActuatorUpdatePayload;
+import no.ntnu.network.message.SensorUpdateMessage.SensorUpdatePayload;
 import no.ntnu.network.message.NodeInfoMessage.NodeInfoPayload;
 import no.ntnu.sigve.client.Client;
 import no.ntnu.sigve.client.MessageObserver;
@@ -45,7 +49,7 @@ public class NodeCommunicationChannel implements ActuatorListener, SensorListene
 	/*
 	 * TODO:
 	 */
-	public void SendInfoMessage(UUID recipient){
+	public void sendInfoMessage(UUID recipient){
 		NodeInfoPayload payload = new NodeInfoPayload(node.getSensors(), node.getActuators());
 		UUID uuid = recipient;
 		if (recipient == null) {
@@ -56,65 +60,22 @@ public class NodeCommunicationChannel implements ActuatorListener, SensorListene
 	}
 
 	/**
-	 * Will send a message to the all the control panels updating them on the state of the actuator. <br>
-	 * The message is built up by several parts:<br>
-	 * All the parts are divided by ",". <br>
-	 * <ul>
-	 * <li>The first four characters are "ACUP" these identify the message as an actuator update.</li>
-	 * <li>The second part is the UUID of the node..</li>
-	 * <li>The third part is the actuator id of the updated actuator.</li>
-	 * <li>The fourth part is the state of the actuator, "1" represents on and "0" represents off.</li>
-	 * </ul>
+	 * TODO:
 	 */
 	@Override
 	public void actuatorUpdated(UUID nodeId, Actuator actuator) {
-		String message = "ACUP" + "," + nodeId + "," + actuator.getId();
-
-		if (actuator.isOn()) {
-			message = message + "," + "1";
-		} else {
-			message = message + "0";
-		}
-
-		broadcastToControlPanel(message);
+		ActuatorUpdatePayload payload = new ActuatorUpdatePayload(actuator, nodeId);
+		client.sendOutgoingMessage(new ActuatorUpdateMessage(StaticIds.CP_BROADCAST, payload));
 	}
 
 	/**
-	 * Sends a message telling how bla bla bla TODO
+	 * Broadcasts a message to the control panels with the updated values of the sensors
 	 */
 	@Override
 	public void sensorsUpdated(List<Sensor> sensors) {
-		String message = null;
-		sensors.size();
-		for (Sensor sensor : sensors) {
-			sensor.getReading().toString();
-		}
-		broadcastToControlPanel(message);
-		//TODO Send sensor updates
-	}
-
-	/**
-	 * Will create and send a message that will be broadcast to all control panels by the server
-	 * @param message
-	 */
-	private void broadcastToControlPanel(String message) {
-		if (message != null) {
-			client.sendOutgoingMessage(
-				new Message<>(UUID.fromString("0"), message)
-			);
-		}
-	}
-
-	/**
-	 * Will create and send a message that will be broadcast to all nodes by the server
-	 * @param message
-	 */
-	private void broadcastToNode(String message) {
-		if (message != null) {
-			client.sendOutgoingMessage(
-				new Message<>(UUID.fromString("1"), message)
-			);
-		}
+		SensorUpdatePayload payload = new SensorUpdatePayload(sensors);
+		SensorUpdateMessage message = new SensorUpdateMessage(StaticIds.CP_BROADCAST, payload);
+		client.sendOutgoingMessage(message);
 	}
 
 	@Override
