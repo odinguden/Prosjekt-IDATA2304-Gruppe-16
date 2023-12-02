@@ -18,34 +18,34 @@ distributed application.
 
 ## The underlying transport protocol
 
-TODO - what transport-layer protocol do you use? TCP? UDP? What port number(s)? Why did you 
+TODO - what transport-layer protocol do you use? TCP? UDP? What port number(s)? Why did you
 choose this transport layer protocol?
 
 ## The architecture
 
-TODO - show the general architecture of your network. Which part is a server? Who are clients? 
-Do you have one or several servers? Perhaps include a picture here. 
+TODO - show the general architecture of your network. Which part is a server? Who are clients?
+Do you have one or several servers? Perhaps include a picture here.
 
 
 ## The flow of information and events
 
-TODO - describe what each network node does and when. Some periodic events? Some reaction on 
-incoming packets? Perhaps split into several subsections, where each subsection describes one 
+TODO - describe what each network node does and when. Some periodic events? Some reaction on
+incoming packets? Perhaps split into several subsections, where each subsection describes one
 node type (For example: one subsection for sensor/actuator nodes, one for control panel nodes).
 
 ## Connection and state
 
-TODO - is your communication protocol connection-oriented or connection-less? Is it stateful or 
-stateless? 
+TODO - is your communication protocol connection-oriented or connection-less? Is it stateful or
+stateless?
 
 ## Types, constants
 
-TODO - Do you have some specific value types you use in several messages? They you can describe 
+TODO - Do you have some specific value types you use in several messages? They you can describe
 them here.
 
 ## Message format
 
-TODO - describe the general format of all messages. Then describe specific format for each 
+TODO - describe the general format of all messages. Then describe specific format for each
 message type in your protocol.
 
 ### Error messages
@@ -54,8 +54,8 @@ TODO - describe the possible error messages that nodes can send in your system.
 
 ## An example scenario
 
-TODO - describe a typical scenario. How would it look like from communication perspective? When 
-are connections established? Which packets are sent? How do nodes react on the packets? An 
+TODO - describe a typical scenario. How would it look like from communication perspective? When
+are connections established? Which packets are sent? How do nodes react on the packets? An
 example scenario could be as follows:
 1. A sensor node with ID=1 is started. It has a temperature sensor, two humidity sensors. It can
    also open a window.
