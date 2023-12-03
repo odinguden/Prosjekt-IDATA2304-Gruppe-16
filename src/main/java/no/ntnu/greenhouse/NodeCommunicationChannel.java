@@ -11,6 +11,7 @@ import no.ntnu.network.message.ActuatorUpdateMessage;
 import no.ntnu.network.message.ClientType;
 import no.ntnu.network.message.ConnectionMessage;
 import no.ntnu.network.message.NodeInfoMessage;
+import no.ntnu.network.message.NodeInfoRequestMessage;
 import no.ntnu.network.message.SensorUpdateMessage;
 import no.ntnu.network.message.ActuatorUpdateMessage.ActuatorUpdatePayload;
 import no.ntnu.network.message.SensorUpdateMessage.SensorUpdatePayload;
@@ -46,11 +47,11 @@ public class NodeCommunicationChannel implements ActuatorListener, SensorListene
 	 * Closes connection to the server
 	*/
 	public void disconnect() {
-		//TODO
+		//TODO implement
 	}
 
 	/*
-	 * TODO:
+	 * TODO: javadoc
 	 */
 	public void sendInfoMessage(UUID recipient){
 		NodeInfoPayload payload = new NodeInfoPayload(node.getSensors(), node.getActuators());
@@ -63,12 +64,23 @@ public class NodeCommunicationChannel implements ActuatorListener, SensorListene
 	}
 
 	/**
-	 * TODO:
+	 * TODO: javadoc
 	 */
 	@Override
 	public void actuatorUpdated(UUID nodeId, Actuator actuator) {
 		ActuatorUpdatePayload payload = new ActuatorUpdatePayload(actuator, nodeId);
 		client.sendOutgoingMessage(new ActuatorUpdateMessage(StaticIds.CP_BROADCAST, payload));
+	}
+
+	/**
+	 * TODO javadoc
+	 */
+	private void changeActuatorState(int id, boolean newState) {
+		if (newState){
+			node.getActuators().get(id).turnOff();
+		} else {
+			node.getActuators().get(id).turnOff();
+		}
 	}
 
 	/**
@@ -83,7 +95,8 @@ public class NodeCommunicationChannel implements ActuatorListener, SensorListene
 
 	@Override
 	public void update(Message<?> arg0) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'update'");
+		if (arg0 instanceof NodeInfoRequestMessage) {
+			sendInfoMessage(arg0.getSource());
+		}
 	}
 }
