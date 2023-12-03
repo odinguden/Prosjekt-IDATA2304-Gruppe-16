@@ -1,9 +1,11 @@
 package no.ntnu.greenhouse;
 
+import java.io.Serializable;
+
 /**
  * A sensor which can sense the environment in a specific way.
  */
-public class Sensor {
+public class Sensor implements Serializable{
   private final SensorReading reading;
   private final double min;
   private final double max;

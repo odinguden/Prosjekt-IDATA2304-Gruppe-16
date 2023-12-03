@@ -13,5 +13,10 @@ public class ActuatorUpdateMessage extends Message<ActuatorUpdateMessage.Actuato
 	}
 
 	//TODO: Implement
-	public record ActuatorUpdatePayload(Actuator actuator, UUID nodeID) implements Serializable {}
+	public record ActuatorUpdatePayload(
+		int id,
+		boolean state,
+		String type,
+		UUID nodeID
+		) implements Serializable {}
 }

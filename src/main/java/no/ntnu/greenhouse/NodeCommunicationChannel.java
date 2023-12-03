@@ -68,7 +68,12 @@ public class NodeCommunicationChannel implements ActuatorListener, SensorListene
 	 */
 	@Override
 	public void actuatorUpdated(UUID nodeId, Actuator actuator) {
-		ActuatorUpdatePayload payload = new ActuatorUpdatePayload(actuator, nodeId);
+		ActuatorUpdatePayload payload = new ActuatorUpdatePayload(
+			actuator.getId(),
+			actuator.isOn(),
+			actuator.getType(),
+			nodeId
+			);
 		client.sendOutgoingMessage(new ActuatorUpdateMessage(StaticIds.CP_BROADCAST, payload));
 	}
 

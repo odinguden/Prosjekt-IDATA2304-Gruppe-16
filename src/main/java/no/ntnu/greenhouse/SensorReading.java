@@ -1,11 +1,12 @@
 package no.ntnu.greenhouse;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 /**
  * Represents one sensor reading (value).
  */
-public class SensorReading {
+public class SensorReading implements Serializable{
   private final String type;
   private double value;
   private final String unit;

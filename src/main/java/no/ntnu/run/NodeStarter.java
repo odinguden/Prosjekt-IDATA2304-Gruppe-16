@@ -25,7 +25,7 @@ public class NodeStarter {
         }
     }
 
-    private void initiateSocketCommunication(SensorActuatorNode node) throws IOException {
+    public static void initiateSocketCommunication(SensorActuatorNode node) throws IOException {
         //TODO: Provide user input for address & port
         String address = "localhost";
         int port = 8080;
