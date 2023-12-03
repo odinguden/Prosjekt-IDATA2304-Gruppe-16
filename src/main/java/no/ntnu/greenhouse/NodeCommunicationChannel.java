@@ -1,7 +1,6 @@
 package no.ntnu.greenhouse;
 
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
@@ -9,6 +8,8 @@ import no.ntnu.listeners.common.ActuatorListener;
 import no.ntnu.listeners.greenhouse.SensorListener;
 import no.ntnu.network.StaticIds;
 import no.ntnu.network.message.ActuatorUpdateMessage;
+import no.ntnu.network.message.ClientType;
+import no.ntnu.network.message.ConnectionMessage;
 import no.ntnu.network.message.NodeInfoMessage;
 import no.ntnu.network.message.SensorUpdateMessage;
 import no.ntnu.network.message.ActuatorUpdateMessage.ActuatorUpdatePayload;
@@ -22,13 +23,15 @@ import no.ntnu.sigve.communication.Message;
  * @author Odin Lyngsgård
  */
 public class NodeCommunicationChannel implements ActuatorListener, SensorListener, MessageObserver {
-	private Client client;
-	private SensorActuatorNode node;
+	private final Client client;
+	private final SensorActuatorNode node;
 
-	public NodeCommunicationChannel(Client client, SensorActuatorNode node) throws IOException {
-		this.client = client;
+	public NodeCommunicationChannel(String address, int port, SensorActuatorNode node) throws IOException {
+		this.client = new Client(address, port);
 		this.node = node;
 		client.addObserver(this);
+		client.connect();
+		client.sendOutgoingMessage(new ConnectionMessage(ClientType.NODE));
 	}
 
 	/**

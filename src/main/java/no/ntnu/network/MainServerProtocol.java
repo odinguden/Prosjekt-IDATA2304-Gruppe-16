@@ -36,7 +36,8 @@ public class MainServerProtocol implements Protocol {
 
 	@Override
 	public void onClientConnect(Server server, UUID clientId) {
-		throw new UnsupportedOperationException("Unimplemented method 'onClientConnect'");
+		//TODO: Whatever this is supposed to do, if anything
+		//throw new UnsupportedOperationException("Unimplemented method 'onClientConnect'");
 	}
 
 	@Override
@@ -108,5 +109,4 @@ public class MainServerProtocol implements Protocol {
 
 		server.broadcastFiltered(message, controlPanels::contains);
 	}
-
 }

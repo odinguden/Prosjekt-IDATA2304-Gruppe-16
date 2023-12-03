@@ -14,6 +14,5 @@ public class NodeInfoMessage extends Message<NodeInfoMessage.NodeInfoPayload> {
 		super(destination, payload);
 	}
 
-	//TODO: Odin, implement this
 	public record NodeInfoPayload(List<Sensor> sensorList, ActuatorCollection actuators) implements Serializable {}
 }

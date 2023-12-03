@@ -10,12 +10,15 @@ import no.ntnu.network.message.NodeInfoRequestMessage;
 import no.ntnu.sigve.client.Client;
 import no.ntnu.sigve.client.MessageObserver;
 import no.ntnu.sigve.communication.Message;
+import no.ntnu.tools.Logger;
 
 public class ControlPanelCommunicationChannel implements CommunicationChannel, MessageObserver {
+	private final ControlPanelLogic logic;
 	private final Client communicationClient;
 
-	public ControlPanelCommunicationChannel(String address, int port) {
-		communicationClient = new Client(address, port);
+	public ControlPanelCommunicationChannel(ControlPanelLogic logic, String address, int port) {
+		this.logic = logic;
+		this.communicationClient = new Client(address, port);
 		communicationClient.addObserver(this);
 	}
 
@@ -33,6 +36,8 @@ public class ControlPanelCommunicationChannel implements CommunicationChannel, M
 			communicationClient.sendOutgoingMessage(new NodeInfoRequestMessage());
 		} catch (IOException ioe) {
 			connectionSuccessful = false;
+			Logger.error("An IOException occurred when trying to connect to the server");
+			ioe.printStackTrace();
 		}
 		return connectionSuccessful;
 	}
@@ -40,8 +45,9 @@ public class ControlPanelCommunicationChannel implements CommunicationChannel, M
 	@Override
 	public void update(Message<?> message) {
 		if (message instanceof NodeInfoMessage nodeInfoMessage) {
-			NodeInfoMessage.NodeInfoPayload payload = nodeInfoMessage.getPayload();
-			//TODO: Something with this, whenever NodeInfoPayload is implemented
+			SensorActuatorNodeInfo info = new SensorActuatorNodeInfo(message.getSource());
+			nodeInfoMessage.getPayload().actuators().iterator().forEachRemaining(info::addActuator);
+			logic.onNodeAdded(info);
 		}
 	}
 
