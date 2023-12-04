@@ -8,18 +8,17 @@ import no.ntnu.network.message.ConnectionMessage;
 import no.ntnu.network.message.NodeInfoMessage;
 import no.ntnu.network.message.NodeInfoRequestMessage;
 import no.ntnu.sigve.client.Client;
-import no.ntnu.sigve.client.MessageObserver;
 import no.ntnu.sigve.communication.Message;
+import no.ntnu.sigve.communication.Protocol;
 import no.ntnu.tools.Logger;
 
-public class ControlPanelCommunicationChannel implements CommunicationChannel, MessageObserver {
+public class ControlPanelCommunicationChannel implements CommunicationChannel {
 	private final ControlPanelLogic logic;
 	private final Client communicationClient;
 
 	public ControlPanelCommunicationChannel(ControlPanelLogic logic, String address, int port) {
 		this.logic = logic;
-		this.communicationClient = new Client(address, port);
-		communicationClient.addObserver(this);
+		this.communicationClient = new Client(address, port, new ControlPanelCommunicationProtocol());
 	}
 
 	@Override
@@ -32,8 +31,6 @@ public class ControlPanelCommunicationChannel implements CommunicationChannel, M
 		boolean connectionSuccessful = true;
 		try {
 			communicationClient.connect();
-			communicationClient.sendOutgoingMessage(new ConnectionMessage(ClientType.CONTROL_PANEL));
-			communicationClient.sendOutgoingMessage(new NodeInfoRequestMessage());
 		} catch (IOException ioe) {
 			connectionSuccessful = false;
 			Logger.error("An IOException occurred when trying to connect to the server");
@@ -42,12 +39,25 @@ public class ControlPanelCommunicationChannel implements CommunicationChannel, M
 		return connectionSuccessful;
 	}
 
-	@Override
-	public void update(Message<?> message) {
-		if (message instanceof NodeInfoMessage nodeInfoMessage) {
-			SensorActuatorNodeInfo info = new SensorActuatorNodeInfo(message.getSource());
-			nodeInfoMessage.getPayload().actuators().iterator().forEachRemaining(info::addActuator);
-			logic.onNodeAdded(info);
+	private class ControlPanelCommunicationProtocol implements Protocol<Client> {
+		@Override
+		public void receiveMessage(Client client, Message<?> message) {
+			if (message instanceof NodeInfoMessage nodeInfoMessage) {
+				SensorActuatorNodeInfo info = new SensorActuatorNodeInfo(message.getSource());
+				nodeInfoMessage.getPayload().actuators().iterator().forEachRemaining(info::addActuator);
+				logic.onNodeAdded(info);
+			}
+		}
+
+		@Override
+		public void onClientConnect(Client client, UUID uuid) {
+			client.sendOutgoingMessage(new ConnectionMessage(ClientType.CONTROL_PANEL));
+			client.sendOutgoingMessage(new NodeInfoRequestMessage());
+		}
+
+		@Override
+		public void onClientDisconnect(Client client, UUID uuid) {
+			Logger.error("Forcefully disconnected");
 		}
 	}
 
