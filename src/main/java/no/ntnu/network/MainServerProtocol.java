@@ -7,11 +7,11 @@ import java.util.UUID;
 import no.ntnu.network.message.ClientType;
 import no.ntnu.network.message.ConnectionMessage;
 import no.ntnu.sigve.communication.Message;
-import no.ntnu.sigve.server.Protocol;
+import no.ntnu.sigve.communication.Protocol;
 import no.ntnu.sigve.server.Server;
 import no.ntnu.tools.Logger;
 
-public class MainServerProtocol implements Protocol {
+public class MainServerProtocol implements Protocol<Server> {
 	private final Map<UUID, ClientType> clientTypeMapping;
 
 	public MainServerProtocol() {
