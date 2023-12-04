@@ -17,30 +17,23 @@ import no.ntnu.network.message.ActuatorUpdateMessage.ActuatorUpdatePayload;
 import no.ntnu.network.message.SensorUpdateMessage.SensorUpdatePayload;
 import no.ntnu.network.message.NodeInfoMessage.NodeInfoPayload;
 import no.ntnu.sigve.client.Client;
-import no.ntnu.sigve.client.MessageObserver;
 import no.ntnu.sigve.communication.Message;
+import no.ntnu.sigve.communication.Protocol;
+import no.ntnu.tools.Logger;
 
 /**
  * @author Odin Lyngsgård
  */
-public class NodeCommunicationChannel implements ActuatorListener, SensorListener, MessageObserver {
+public class NodeCommunicationChannel implements ActuatorListener, SensorListener {
 	private final Client client;
 	private final SensorActuatorNode node;
 
 	public NodeCommunicationChannel(String address, int port, SensorActuatorNode node) throws IOException {
-		this.client = new Client(address, port);
+		Protocol<Client> protocol = new NodeCommunicationProtocol();
+		this.client = new Client(address, port, protocol);
 		this.node = node;
-		client.addObserver(this);
 		client.connect();
 		client.sendOutgoingMessage(new ConnectionMessage(ClientType.NODE));
-	}
-
-	/**
-	 * Sends a message containing a list of the actuators and sensors to the server.
-	 * The server will forward these to the control panels.
-	 */
-	public void onFirstConnect(){
-		sendInfoMessage(null);
 	}
 
 	/**
@@ -51,7 +44,7 @@ public class NodeCommunicationChannel implements ActuatorListener, SensorListene
 	}
 
 	/*
-	 * TODO: javadoc
+	 * TODO: Lær Odin å skrive javadoc istedetfor todo comments
 	 */
 	public void sendInfoMessage(UUID recipient){
 		NodeInfoPayload payload = new NodeInfoPayload(node.getSensors(), node.getActuators());
@@ -86,6 +79,7 @@ public class NodeCommunicationChannel implements ActuatorListener, SensorListene
 		} else {
 			node.getActuators().get(id).turnOff();
 		}
+
 	}
 
 	/**
@@ -98,10 +92,24 @@ public class NodeCommunicationChannel implements ActuatorListener, SensorListene
 		client.sendOutgoingMessage(message);
 	}
 
-	@Override
-	public void update(Message<?> arg0) {
-		if (arg0 instanceof NodeInfoRequestMessage) {
-			sendInfoMessage(arg0.getSource());
+	private class NodeCommunicationProtocol implements Protocol<Client> {
+		@Override
+		public void onClientConnect(Client caller, UUID sessionId) {
+			Logger.info("Client connected");
+			sendInfoMessage(null);
 		}
+
+		@Override
+		public void onClientDisconnect(Client caller, UUID sessionId) {
+			Logger.error("Client forcefully disconnected");
+		}
+
+		@Override
+		public void receiveMessage(Client caller, Message<?> message) {
+			if (message instanceof NodeInfoRequestMessage) {
+				sendInfoMessage(message.getSource());
+			}
+		}
+
 	}
 }
