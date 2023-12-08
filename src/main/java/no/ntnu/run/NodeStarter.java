@@ -2,6 +2,7 @@ package no.ntnu.run;
 
 import java.io.IOException;
 import no.ntnu.greenhouse.NodeCommunicationChannel;
+import no.ntnu.greenhouse.Sensor;
 import no.ntnu.greenhouse.SensorActuatorNode;
 import no.ntnu.tools.Logger;
 
@@ -32,5 +33,7 @@ public class NodeStarter {
         NodeCommunicationChannel nodeChannel = new NodeCommunicationChannel(address, port, node);
         node.addSensorListener(nodeChannel);
         node.addActuatorListener(nodeChannel);
+        node.addSensors(new Sensor("Temperature", 0, 100, 0, "your mom"), 1);
+        node.start();
     }
 }

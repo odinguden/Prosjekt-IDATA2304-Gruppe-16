@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.UUID;
 import no.ntnu.network.message.ClientType;
 import no.ntnu.network.message.ConnectionMessage;
+import no.ntnu.network.message.NodeInfoMessage;
 import no.ntnu.sigve.communication.Message;
 import no.ntnu.sigve.communication.Protocol;
 import no.ntnu.sigve.server.Server;
@@ -23,6 +24,8 @@ public class MainServerProtocol implements Protocol<Server> {
 	public void receiveMessage(Server server, Message<?> message) {
 		UUID destination = message.getDestination();
 
+		Logger.info("Got message");
+
 		if (destination == null) {
 			handleMessageIntendedForServer(server, message);
 		} else if (destination.equals(StaticIds.CP_BROADCAST)) {
@@ -36,8 +39,7 @@ public class MainServerProtocol implements Protocol<Server> {
 
 	@Override
 	public void onClientConnect(Server server, UUID clientId) {
-		//TODO: Whatever this is supposed to do, if anything
-		//throw new UnsupportedOperationException("Unimplemented method 'onClientConnect'");
+		Logger.info("Client connected " + clientId);
 	}
 
 	@Override

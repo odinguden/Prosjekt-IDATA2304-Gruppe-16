@@ -42,10 +42,10 @@ public class ControlPanelCommunicationChannel implements CommunicationChannel {
 	private class ControlPanelCommunicationProtocol implements Protocol<Client> {
 		@Override
 		public void receiveMessage(Client client, Message<?> message) {
+			Logger.info("Got message " + message.getClass().toString());
 			if (message instanceof NodeInfoMessage nodeInfoMessage) {
 				SensorActuatorNodeInfo info = new SensorActuatorNodeInfo(message.getSource());
-				nodeInfoMessage.getPayload().actuators().iterator().forEachRemaining(info::addActuator);
-				logic.onNodeAdded(info);
+				Logger.info(info.getActuators().toString());
 			}
 		}
 

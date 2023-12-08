@@ -79,7 +79,6 @@ public class NodeCommunicationChannel implements ActuatorListener, SensorListene
 		} else {
 			node.getActuators().get(id).turnOff();
 		}
-
 	}
 
 	/**
