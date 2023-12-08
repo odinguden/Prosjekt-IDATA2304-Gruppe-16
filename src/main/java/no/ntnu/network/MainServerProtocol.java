@@ -25,7 +25,7 @@ public class MainServerProtocol implements Protocol<Server> {
 	public void receiveMessage(Server server, Message<?> message) {
 		UUID destination = message.getDestination();
 
-		Logger.info("Got message");
+		Logger.info("Got message: " + message.getClass().getName());
 
 		if (destination == null) {
 			handleMessageIntendedForServer(server, message);

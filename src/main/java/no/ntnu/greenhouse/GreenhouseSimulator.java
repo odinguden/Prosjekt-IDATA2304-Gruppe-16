@@ -71,7 +71,7 @@ public class GreenhouseSimulator {
 
   private void initiateRealCommunication() {
     // TODO - here you can set up the TCP or UDP communication
-    ServerStarter.main(null);
+    //ServerStarter.main(null);
     for (SensorActuatorNode node : nodes.values()) {
       try {
         NodeStarter.initiateSocketCommunication(node);

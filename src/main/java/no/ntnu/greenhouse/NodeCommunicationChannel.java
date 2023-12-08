@@ -50,8 +50,8 @@ public class NodeCommunicationChannel implements ActuatorListener, SensorListene
 		NodeInfoPayload payload = new NodeInfoPayload(node.getSensors(), node.getActuators());
 		UUID uuid = recipient;
 		if (recipient == null) {
-			uuid = StaticIds.CP_BROADCAST;
 		}
+		uuid = StaticIds.CP_BROADCAST;
 		NodeInfoMessage message = new NodeInfoMessage(uuid, payload);
 		client.sendOutgoingMessage(message);
 	}
@@ -102,6 +102,14 @@ public class NodeCommunicationChannel implements ActuatorListener, SensorListene
 		public void receiveMessage(Client caller, Message<?> message) {
 			if (message instanceof NodeInfoRequestMessage) {
 				sendInfoMessage(message.getSource());
+			}
+			if (message instanceof ActuatorUpdateMessage actuatorUpdateMessage) {
+				int id = actuatorUpdateMessage.getPayload().getId();
+				if (actuatorUpdateMessage.getPayload().isNewState()) {
+					node.getActuators().get(id).turnOn();
+				} else {
+					node.getActuators().get(id).turnOff();
+				}
 			}
 		}
 

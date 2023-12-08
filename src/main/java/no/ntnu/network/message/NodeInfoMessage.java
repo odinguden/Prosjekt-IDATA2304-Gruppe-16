@@ -81,18 +81,18 @@ public class NodeInfoMessage extends Message<NodeInfoMessage.NodeInfoPayload> {
 
 	public static class NodeActuatorInfo implements Serializable{
 		private final String type;
-		private final UUID nodeId;
+		private final int actuatorId;
 		private NodeActuatorInfo(Actuator actuator) {
 			this.type = actuator.getType();
-			this.nodeId = actuator.getNodeId();
+			this.actuatorId = actuator.getId();
 		}
 
 		public String getType() {
 			return this.type;
 		}
 
-		public UUID getNodeId() {
-			return this.nodeId;
+		public int getActuatorId() {
+			return this.actuatorId;
 		}
 	}
 }

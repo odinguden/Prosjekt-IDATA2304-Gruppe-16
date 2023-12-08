@@ -2,11 +2,22 @@ package no.ntnu.controlpanel;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.UUID;
+
+import no.ntnu.greenhouse.Actuator;
+import no.ntnu.greenhouse.Sensor;
+import no.ntnu.greenhouse.SensorReading;
+import no.ntnu.network.message.ActuatorUpdateMessage;
 import no.ntnu.network.message.ClientType;
 import no.ntnu.network.message.ConnectionMessage;
 import no.ntnu.network.message.NodeInfoMessage;
+import no.ntnu.network.message.NodeInfoMessage.NodeActuatorInfo;
+import no.ntnu.network.message.payload.ActuatorUpdateInfo;
+import no.ntnu.network.message.payload.NodeSensorInfo;
 import no.ntnu.network.message.NodeInfoRequestMessage;
+import no.ntnu.network.message.SensorUpdateMessage;
 import no.ntnu.sigve.client.Client;
 import no.ntnu.sigve.communication.Message;
 import no.ntnu.sigve.communication.Protocol;
@@ -18,12 +29,12 @@ public class ControlPanelCommunicationChannel implements CommunicationChannel {
 
 	public ControlPanelCommunicationChannel(ControlPanelLogic logic, String address, int port) {
 		this.logic = logic;
-		this.communicationClient = new Client(address, port, new ControlPanelCommunicationProtocol());
+		this.communicationClient = new Client(address, port, new ControlPanelCommunicationProtocol(logic));
 	}
 
 	@Override
 	public void sendActuatorChange(UUID nodeId, int actuatorId, boolean isOn) {
-		communicationClient.sendOutgoingMessage(new Message<>(nodeId, new ActuatorPayload(actuatorId, isOn)));
+		communicationClient.sendOutgoingMessage(new ActuatorUpdateMessage(nodeId, new ActuatorUpdateInfo(actuatorId, isOn)));
 	}
 
 	@Override
@@ -40,12 +51,47 @@ public class ControlPanelCommunicationChannel implements CommunicationChannel {
 	}
 
 	private class ControlPanelCommunicationProtocol implements Protocol<Client> {
+		private ControlPanelLogic logic;
+
+		public ControlPanelCommunicationProtocol (ControlPanelLogic logic) {
+			this.logic = logic;
+		}
+
 		@Override
 		public void receiveMessage(Client client, Message<?> message) {
 			Logger.info("Got message " + message.getClass().toString());
 			if (message instanceof NodeInfoMessage nodeInfoMessage) {
-				SensorActuatorNodeInfo info = new SensorActuatorNodeInfo(message.getSource());
-				Logger.info(info.getActuators().toString());
+				SensorActuatorNodeInfo sensorActuatorNodeInfo = new SensorActuatorNodeInfo(nodeInfoMessage.getSource());
+				List<NodeActuatorInfo> actuatorList = nodeInfoMessage.getPayload().getActuators();
+				for (NodeActuatorInfo nodeActuatorInfo : actuatorList) {
+					sensorActuatorNodeInfo.addActuator(
+						new Actuator(
+							nodeActuatorInfo.getActuatorId(),
+							nodeActuatorInfo.getType(),
+							nodeInfoMessage.getSource()
+							)
+						);
+				}
+				logic.onNodeAdded(sensorActuatorNodeInfo);
+
+				updateSensorReadings(nodeInfoMessage.getSource(), nodeInfoMessage.getPayload().getSensors());
+
+				Logger.info(sensorActuatorNodeInfo.getActuators().toString());
+			}
+
+			if (message instanceof ActuatorUpdateMessage actuatorUpdateMessage) {
+				logic.onActuatorStateChanged(
+					actuatorUpdateMessage.getSource(),
+					actuatorUpdateMessage.getPayload().getId(),
+					actuatorUpdateMessage.getPayload().isNewState()
+				);
+				Logger.info("actuator update");
+			}
+
+			if (message instanceof SensorUpdateMessage sensorUpdateMessage) {
+				updateSensorReadings(sensorUpdateMessage.getSource(), sensorUpdateMessage.getPayload().getSensorInfo());
+				Logger.info("sensor update");
+
 			}
 		}
 
@@ -58,6 +104,14 @@ public class ControlPanelCommunicationChannel implements CommunicationChannel {
 		@Override
 		public void onClientDisconnect(Client client, UUID uuid) {
 			Logger.error("Forcefully disconnected");
+		}
+
+		private void updateSensorReadings(UUID nodeID, List<NodeSensorInfo> sensors){
+			List<SensorReading> sensorReadings = new LinkedList<>();
+			for (NodeSensorInfo sensor : sensors) {
+				sensorReadings.add(new SensorReading(sensor.getType(), sensor.getValue(), sensor.getUnit()));
+			}
+			logic.onSensorData(nodeID, sensorReadings);
 		}
 	}
 
