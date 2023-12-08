@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.UUID;
 import no.ntnu.network.message.ClientType;
 import no.ntnu.network.message.ConnectionMessage;
+import no.ntnu.network.message.NodeDisconnectMessage;
 import no.ntnu.network.message.NodeInfoMessage;
 import no.ntnu.sigve.communication.Message;
 import no.ntnu.sigve.communication.Protocol;
@@ -44,7 +45,7 @@ public class MainServerProtocol implements Protocol<Server> {
 
 	@Override
 	public void onClientDisconnect(Server server, UUID clientId) {
-		handleDisconnection(clientId);
+		handleDisconnection(server, clientId);
 	}
 
 	private void handleMessageIntendedForServer(Server server, Message<?> message) {
@@ -78,8 +79,13 @@ public class MainServerProtocol implements Protocol<Server> {
 	 *
 	 * @param clientId the session id of the client attempting to disconnect.
 	 */
-	private void handleDisconnection(UUID clientId) {
+	private void handleDisconnection(Server server, UUID clientId) {
+		ClientType type = this.clientTypeMapping.get(clientId);
 		this.clientTypeMapping.remove(clientId);
+		if (type == ClientType.NODE) {
+			NodeDisconnectMessage message = new NodeDisconnectMessage(StaticIds.CP_BROADCAST, clientId);
+			broadcastToAllControlPanels(server, message);
+		}
 	}
 
 	/**
