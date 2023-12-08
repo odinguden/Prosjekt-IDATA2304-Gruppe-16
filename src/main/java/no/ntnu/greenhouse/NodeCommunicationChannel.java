@@ -104,11 +104,12 @@ public class NodeCommunicationChannel implements ActuatorListener, SensorListene
 				sendInfoMessage(message.getSource());
 			}
 			if (message instanceof ActuatorUpdateMessage actuatorUpdateMessage) {
-				int id = actuatorUpdateMessage.getPayload().getId();
+				Logger.info("actuator change recived");
+				Actuator actuator = node.getActuators().get(actuatorUpdateMessage.getPayload().getId());
 				if (actuatorUpdateMessage.getPayload().isNewState()) {
-					node.getActuators().get(id).turnOn();
+					actuator.turnOn();
 				} else {
-					node.getActuators().get(id).turnOff();
+					actuator.turnOff();
 				}
 			}
 		}

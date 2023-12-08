@@ -9,6 +9,8 @@ import java.util.UUID;
 import no.ntnu.greenhouse.Actuator;
 import no.ntnu.greenhouse.Sensor;
 import no.ntnu.greenhouse.SensorReading;
+import no.ntnu.listeners.common.ActuatorListener;
+import no.ntnu.listeners.controlpanel.GreenhouseEventListener;
 import no.ntnu.network.message.ActuatorUpdateMessage;
 import no.ntnu.network.message.ClientType;
 import no.ntnu.network.message.ConnectionMessage;
@@ -64,13 +66,13 @@ public class ControlPanelCommunicationChannel implements CommunicationChannel {
 				SensorActuatorNodeInfo sensorActuatorNodeInfo = new SensorActuatorNodeInfo(nodeInfoMessage.getSource());
 				List<NodeActuatorInfo> actuatorList = nodeInfoMessage.getPayload().getActuators();
 				for (NodeActuatorInfo nodeActuatorInfo : actuatorList) {
-					sensorActuatorNodeInfo.addActuator(
-						new Actuator(
+					Actuator actuator = new Actuator(
 							nodeActuatorInfo.getActuatorId(),
 							nodeActuatorInfo.getType(),
 							nodeInfoMessage.getSource()
-							)
-						);
+							);
+					actuator.setListener(logic);
+					sensorActuatorNodeInfo.addActuator(actuator);
 				}
 				logic.onNodeAdded(sensorActuatorNodeInfo);
 
@@ -80,6 +82,7 @@ public class ControlPanelCommunicationChannel implements CommunicationChannel {
 			}
 
 			if (message instanceof ActuatorUpdateMessage actuatorUpdateMessage) {
+				Logger.info("Actuator state change");
 				logic.onActuatorStateChanged(
 					actuatorUpdateMessage.getSource(),
 					actuatorUpdateMessage.getPayload().getId(),
@@ -132,4 +135,7 @@ public class ControlPanelCommunicationChannel implements CommunicationChannel {
 			return state;
 		}
 	}
+
+
+
 }
