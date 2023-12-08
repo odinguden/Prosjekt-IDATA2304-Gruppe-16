@@ -7,10 +7,7 @@ import java.util.List;
 import java.util.UUID;
 
 import no.ntnu.greenhouse.Actuator;
-import no.ntnu.greenhouse.Sensor;
 import no.ntnu.greenhouse.SensorReading;
-import no.ntnu.listeners.common.ActuatorListener;
-import no.ntnu.listeners.controlpanel.GreenhouseEventListener;
 import no.ntnu.network.message.ActuatorUpdateMessage;
 import no.ntnu.network.message.ClientType;
 import no.ntnu.network.message.ConnectionMessage;
@@ -26,11 +23,9 @@ import no.ntnu.sigve.communication.Protocol;
 import no.ntnu.tools.Logger;
 
 public class ControlPanelCommunicationChannel implements CommunicationChannel {
-	private final ControlPanelLogic logic;
 	private final Client communicationClient;
 
 	public ControlPanelCommunicationChannel(ControlPanelLogic logic, String address, int port) {
-		this.logic = logic;
 		this.communicationClient = new Client(address, port, new ControlPanelCommunicationProtocol(logic));
 	}
 
@@ -122,7 +117,7 @@ public class ControlPanelCommunicationChannel implements CommunicationChannel {
 		private final int actuatorId;
 		private final boolean state;
 
-		private ActuatorPayload(int actuatorId, boolean state) {
+		public ActuatorPayload(int actuatorId, boolean state) {
 			this.actuatorId = actuatorId;
 			this.state = state;
 		}

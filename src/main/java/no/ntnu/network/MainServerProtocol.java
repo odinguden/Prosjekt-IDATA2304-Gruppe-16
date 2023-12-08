@@ -7,7 +7,6 @@ import java.util.UUID;
 import no.ntnu.network.message.ClientType;
 import no.ntnu.network.message.ConnectionMessage;
 import no.ntnu.network.message.NodeDisconnectMessage;
-import no.ntnu.network.message.NodeInfoMessage;
 import no.ntnu.sigve.communication.Message;
 import no.ntnu.sigve.communication.Protocol;
 import no.ntnu.sigve.server.Server;
@@ -28,7 +27,7 @@ public class MainServerProtocol implements Protocol<Server> {
 		Logger.info("Got message: " + message.getClass().getName());
 
 		if (destination == null) {
-			handleMessageIntendedForServer(server, message);
+			handleMessageIntendedForServer(message);
 		} else if (destination.equals(StaticIds.CP_BROADCAST)) {
 			broadcastToAllControlPanels(server, message);
 		} else if (destination.equals(StaticIds.NODE_BROADCAST)) {
@@ -48,7 +47,7 @@ public class MainServerProtocol implements Protocol<Server> {
 		handleDisconnection(server, clientId);
 	}
 
-	private void handleMessageIntendedForServer(Server server, Message<?> message) {
+	private void handleMessageIntendedForServer(Message<?> message) {
 		if (message instanceof ConnectionMessage connectionMessage) {
 			this.handleClientAssignment(connectionMessage);
 		} else {

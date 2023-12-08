@@ -43,37 +43,24 @@ public class NodeCommunicationChannel implements ActuatorListener, SensorListene
 		//TODO implement
 	}
 
-	/*
-	 * TODO: Lær Odin å skrive javadoc istedetfor todo comments
+	/**
+	 * sends a info message containing sensor and actuator information to control panels.
+	 * @enum recipient the client the info message will be sent to.
 	 */
 	public void sendInfoMessage(UUID recipient){
 		NodeInfoPayload payload = new NodeInfoPayload(node.getSensors(), node.getActuators());
-		UUID uuid = recipient;
-		if (recipient == null) {
-		}
-		uuid = StaticIds.CP_BROADCAST;
-		NodeInfoMessage message = new NodeInfoMessage(uuid, payload);
+		recipient = StaticIds.CP_BROADCAST;
+		NodeInfoMessage message = new NodeInfoMessage(recipient, payload);
 		client.sendOutgoingMessage(message);
 	}
 
 	/**
-	 * TODO: javadoc
+	 * When a actuator changes state this method will broadcast a ActuatorUpdateMessage to control panels.
 	 */
 	@Override
 	public void actuatorUpdated(UUID nodeId, Actuator actuator) {
 		ActuatorUpdateInfo payload = new ActuatorUpdateInfo(actuator.getId(), actuator.isOn());
 		client.sendOutgoingMessage(new ActuatorUpdateMessage(StaticIds.CP_BROADCAST, payload));
-	}
-
-	/**
-	 * TODO javadoc
-	 */
-	private void changeActuatorState(int id, boolean newState) {
-		if (newState){
-			node.getActuators().get(id).turnOff();
-		} else {
-			node.getActuators().get(id).turnOff();
-		}
 	}
 
 	/**

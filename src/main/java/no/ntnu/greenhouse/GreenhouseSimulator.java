@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.UUID;
 import no.ntnu.listeners.greenhouse.NodeStateListener;
 import no.ntnu.run.NodeStarter;
-import no.ntnu.run.ServerStarter;
 import no.ntnu.tools.Logger;
 
 /**
@@ -31,7 +30,7 @@ public class GreenhouseSimulator {
   }
 
   /**
-   * Initialise the greenhouse but don't start the simulation just yet.
+   * Initialize the greenhouse but don't start the simulation just yet.
    */
   public void initialize() {
     createNode(1, 2, 1, 0, 0);
