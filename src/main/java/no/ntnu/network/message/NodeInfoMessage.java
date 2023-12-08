@@ -11,6 +11,7 @@ import java.util.stream.StreamSupport;
 import no.ntnu.greenhouse.Actuator;
 import no.ntnu.greenhouse.ActuatorCollection;
 import no.ntnu.greenhouse.Sensor;
+import no.ntnu.network.message.payload.NodeSensorInfo;
 import no.ntnu.sigve.communication.Message;
 
 public class NodeInfoMessage extends Message<NodeInfoMessage.NodeInfoPayload> {
@@ -45,29 +46,6 @@ public class NodeInfoMessage extends Message<NodeInfoMessage.NodeInfoPayload> {
 
 		public List<NodeActuatorInfo> getActuators() {
 			return this.nodeActuators;
-		}
-	}
-
-	public static class NodeSensorInfo implements Serializable {
-		private final String type;
-		private final double value;
-		private final String unit;
-		private NodeSensorInfo(Sensor sensor) {
-			this.type = sensor.getType();
-			this.value = sensor.getReading().getValue();
-			this.unit = sensor.getReading().getUnit();
-		}
-
-		public String getType() {
-			return this.type;
-		}
-
-		public double getValue() {
-			return this.value;
-		}
-
-		public String getUnit() {
-			return this.unit;
 		}
 	}
 
