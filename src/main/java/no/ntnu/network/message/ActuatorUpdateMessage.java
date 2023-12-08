@@ -1,22 +1,22 @@
 package no.ntnu.network.message;
 
-import java.io.Serializable;
 import java.util.UUID;
 
-import no.ntnu.greenhouse.Actuator;
+import no.ntnu.network.message.payload.ActuatorUpdateInfo;
 import no.ntnu.sigve.communication.Message;
 
-public class ActuatorUpdateMessage extends Message<ActuatorUpdateMessage.ActuatorUpdatePayload> {
-
-	public ActuatorUpdateMessage(UUID destination, ActuatorUpdatePayload payload) {
+/**
+ * A message containing a notification about an actuator having been updated.
+ * <p>If looking to send an update <b>to</b> an actuator, see {@link ActuatorCommandMessage}</p>
+ */
+public class ActuatorUpdateMessage extends Message<ActuatorUpdateInfo> {
+	/**
+	 * Creates a new actuator update message
+	 *
+	 * @param destination the message's destination
+	 * @param payload the message's payload
+	 */
+	public ActuatorUpdateMessage(UUID destination, ActuatorUpdateInfo payload) {
 		super(destination, payload);
 	}
-
-	//TODO: Implement
-	public record ActuatorUpdatePayload(
-		int id,
-		boolean state,
-		String type,
-		UUID nodeID
-		) implements Serializable {}
 }

@@ -13,8 +13,8 @@ import no.ntnu.network.message.ConnectionMessage;
 import no.ntnu.network.message.NodeInfoMessage;
 import no.ntnu.network.message.NodeInfoRequestMessage;
 import no.ntnu.network.message.SensorUpdateMessage;
-import no.ntnu.network.message.ActuatorUpdateMessage.ActuatorUpdatePayload;
 import no.ntnu.network.message.SensorUpdateMessage.SensorUpdatePayload;
+import no.ntnu.network.message.payload.ActuatorUpdateInfo;
 import no.ntnu.network.message.NodeInfoMessage.NodeInfoPayload;
 import no.ntnu.sigve.client.Client;
 import no.ntnu.sigve.communication.Message;
@@ -61,12 +61,7 @@ public class NodeCommunicationChannel implements ActuatorListener, SensorListene
 	 */
 	@Override
 	public void actuatorUpdated(UUID nodeId, Actuator actuator) {
-		ActuatorUpdatePayload payload = new ActuatorUpdatePayload(
-			actuator.getId(),
-			actuator.isOn(),
-			actuator.getType(),
-			nodeId
-			);
+		ActuatorUpdateInfo payload = new ActuatorUpdateInfo(actuator.getId(), actuator.isOn());
 		client.sendOutgoingMessage(new ActuatorUpdateMessage(StaticIds.CP_BROADCAST, payload));
 	}
 
