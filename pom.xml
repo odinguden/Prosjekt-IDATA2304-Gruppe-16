@@ -26,7 +26,7 @@
         <dependency>
             <groupId>com.github.sigve10</groupId>
             <artifactId>socket-sandbox</artifactId>
-            <version>7e528798356640ea3007f829fa9466c6c9d241ec</version>
+            <version>1e238aa2e1a3a4576d50f7dbaa0f35c3c972c2e7</version>
         </dependency>
 
         <dependency>
