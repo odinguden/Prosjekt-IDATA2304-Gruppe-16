@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 import no.ntnu.listeners.greenhouse.NodeStateListener;
 import no.ntnu.run.NodeStarter;
@@ -72,14 +73,27 @@ public class GreenhouseSimulator {
     // TODO - here you can set up the TCP or UDP communication
     for (SensorActuatorNode node : nodes.values()) {
       try {
-        NodeStarter.initiateSocketCommunication(node);
+      initiateSocketCommunication(node);
       } catch (IOException e) {
-        // TODO Auto-generated catch block
         e.printStackTrace();
       }
     }
-
   }
+
+  /**
+   * Initiates socket communication for a node
+   * @param node
+   * @throws IOException
+   */
+  public static void initiateSocketCommunication(SensorActuatorNode node) throws IOException {
+    String address = "localhost";
+    int port = 8080;
+    NodeCommunicationChannel nodeChannel = new NodeCommunicationChannel(address, port, node);
+    node.addSensorListener(nodeChannel);
+    node.addActuatorListener(nodeChannel);
+    node.addStateListener(nodeChannel);
+}
+
 
   private void initiateFakePeriodicSwitches() {
     periodicSwitches.add(new PeriodicSwitch("Window DJ", nodes.get(UUID.fromString("1")), 2, 20000));
@@ -117,6 +131,26 @@ public class GreenhouseSimulator {
   public void subscribeToLifecycleUpdates(NodeStateListener listener) {
     for (SensorActuatorNode node : nodes.values()) {
       node.addStateListener(listener);
+    }
+  }
+
+  /**
+   * Will start a number of nodes with a randomized number of sensors and actuators.
+   *
+   * @param count number of nodes the application will start.
+   */
+  public void nodeStarter(int count){
+    int i = 0;
+    while (i < count) {
+      Random random = new Random();
+      createNode(
+        random.nextInt(4),
+        random.nextInt(4),
+        random.nextInt(4),
+        random.nextInt(4),
+        random.nextInt(4)
+        );
+        i++;
     }
   }
 }
