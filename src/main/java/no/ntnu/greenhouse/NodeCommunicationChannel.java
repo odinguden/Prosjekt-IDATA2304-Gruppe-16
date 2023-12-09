@@ -45,6 +45,12 @@ public class NodeCommunicationChannel implements ActuatorListener, SensorListene
 		client.sendOutgoingMessage(
 			new NodeDisconnectMessage(StaticIds.CP_BROADCAST, client.getSessionId())
 		);
+		try {
+			client.stopSocketCommunication();
+		} catch (IOException e) {
+			Logger.error("Failed to stop socket communication");
+			e.printStackTrace();
+		}
 		Logger.info("Client " + client.getSessionId() + " disconnected.");
 	}
 
