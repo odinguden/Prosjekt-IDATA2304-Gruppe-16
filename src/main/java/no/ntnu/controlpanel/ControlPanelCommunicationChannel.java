@@ -11,6 +11,7 @@ import no.ntnu.greenhouse.SensorReading;
 import no.ntnu.network.message.ActuatorUpdateMessage;
 import no.ntnu.network.message.ClientType;
 import no.ntnu.network.message.ConnectionMessage;
+import no.ntnu.network.message.NodeDisconnectMessage;
 import no.ntnu.network.message.NodeInfoMessage;
 import no.ntnu.network.message.NodeInfoMessage.NodeActuatorInfo;
 import no.ntnu.network.message.payload.ActuatorUpdateInfo;
@@ -45,6 +46,14 @@ public class ControlPanelCommunicationChannel implements CommunicationChannel {
 			ioe.printStackTrace();
 		}
 		return connectionSuccessful;
+	}
+
+	/***
+	 * Notify the server that the Control panel wants to disconnect.
+	 *
+	 */
+	public void disconnect() {
+		//todo:
 	}
 
 	private class ControlPanelCommunicationProtocol implements Protocol<Client> {
@@ -89,7 +98,10 @@ public class ControlPanelCommunicationChannel implements CommunicationChannel {
 			if (message instanceof SensorUpdateMessage sensorUpdateMessage) {
 				updateSensorReadings(sensorUpdateMessage.getSource(), sensorUpdateMessage.getPayload().getSensorInfo());
 				Logger.info("sensor update");
+			}
 
+			if (message instanceof NodeDisconnectMessage nodeDisconnectMessage) {
+				logic.onNodeRemoved(nodeDisconnectMessage.getSource());
 			}
 		}
 

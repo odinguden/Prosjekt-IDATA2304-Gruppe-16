@@ -5,11 +5,13 @@ import java.util.List;
 import java.util.UUID;
 
 import no.ntnu.listeners.common.ActuatorListener;
+import no.ntnu.listeners.greenhouse.NodeStateListener;
 import no.ntnu.listeners.greenhouse.SensorListener;
 import no.ntnu.network.StaticIds;
 import no.ntnu.network.message.ActuatorUpdateMessage;
 import no.ntnu.network.message.ClientType;
 import no.ntnu.network.message.ConnectionMessage;
+import no.ntnu.network.message.NodeDisconnectMessage;
 import no.ntnu.network.message.NodeInfoMessage;
 import no.ntnu.network.message.NodeInfoRequestMessage;
 import no.ntnu.network.message.SensorUpdateMessage;
@@ -24,7 +26,7 @@ import no.ntnu.tools.Logger;
 /**
  * @author Odin Lyngsgård
  */
-public class NodeCommunicationChannel implements ActuatorListener, SensorListener {
+public class NodeCommunicationChannel implements ActuatorListener, SensorListener, NodeStateListener {
 	private final Client client;
 	private final SensorActuatorNode node;
 
@@ -40,17 +42,24 @@ public class NodeCommunicationChannel implements ActuatorListener, SensorListene
 	 * Closes connection to the server
 	*/
 	public void disconnect() {
-		//TODO implement
+		client.sendOutgoingMessage(
+			new NodeDisconnectMessage(StaticIds.CP_BROADCAST, client.getSessionId())
+		);
+		Logger.info("Client " + client.getSessionId() + " disconnected.");
 	}
 
 	/**
 	 * sends a info message containing sensor and actuator information to control panels.
-	 * @enum recipient the client the info message will be sent to.
+	 * @param recipient the client the info message will be sent to.
 	 */
 	public void sendInfoMessage(UUID recipient){
+		NodeInfoMessage message;
 		NodeInfoPayload payload = new NodeInfoPayload(node.getSensors(), node.getActuators());
-		recipient = StaticIds.CP_BROADCAST;
-		NodeInfoMessage message = new NodeInfoMessage(recipient, payload);
+		if (recipient == null) {
+			message = new NodeInfoMessage(StaticIds.CP_BROADCAST, payload);
+		} else {
+			message = new NodeInfoMessage(recipient, payload);
+		}
 		client.sendOutgoingMessage(message);
 	}
 
@@ -73,6 +82,27 @@ public class NodeCommunicationChannel implements ActuatorListener, SensorListene
 		client.sendOutgoingMessage(message);
 	}
 
+	/**
+	 * Runs when node is ready
+	 * @param node
+	 */
+	@Override
+	public void onNodeReady(SensorActuatorNode node) {
+		// TODO Auto-generated method stub
+		Logger.info("Ready");
+	}
+
+	/**
+	 * Stops communication with the server after sending a disconnect message.
+	 * @param node the node that stopped
+	 */
+	@Override
+	public void onNodeStopped(SensorActuatorNode node) {
+		disconnect();
+		Logger.info("Stopped communication.");
+	}
+
+
 	private class NodeCommunicationProtocol implements Protocol<Client> {
 		@Override
 		public void onClientConnect(Client caller, UUID sessionId) {
@@ -82,6 +112,7 @@ public class NodeCommunicationChannel implements ActuatorListener, SensorListene
 
 		@Override
 		public void onClientDisconnect(Client caller, UUID sessionId) {
+			disconnect();
 			Logger.error("Client forcefully disconnected");
 		}
 
@@ -100,6 +131,5 @@ public class NodeCommunicationChannel implements ActuatorListener, SensorListene
 				}
 			}
 		}
-
 	}
 }
