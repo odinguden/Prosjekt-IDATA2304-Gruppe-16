@@ -2,7 +2,6 @@ package no.ntnu.run;
 
 import java.io.IOException;
 import no.ntnu.greenhouse.NodeCommunicationChannel;
-import no.ntnu.greenhouse.Sensor;
 import no.ntnu.greenhouse.SensorActuatorNode;
 import no.ntnu.tools.Logger;
 
@@ -27,12 +26,12 @@ public class NodeStarter {
     }
 
     public static void initiateSocketCommunication(SensorActuatorNode node) throws IOException {
-        //TODO: Provide user input for address & port
         String address = "localhost";
         int port = 8080;
         NodeCommunicationChannel nodeChannel = new NodeCommunicationChannel(address, port, node);
         node.addSensorListener(nodeChannel);
         node.addActuatorListener(nodeChannel);
+        node.addStateListener(nodeChannel);
         node.start();
     }
 }

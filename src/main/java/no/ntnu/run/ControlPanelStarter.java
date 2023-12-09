@@ -59,8 +59,6 @@ public class ControlPanelStarter {
   private CommunicationChannel initiateSocketCommunication(ControlPanelLogic logic) {
     // You communication class(es) may want to get reference to the logic and call necessary
     // logic methods when events happen (for example, when sensor data is received)
-
-    //TODO: Provide user input for address & port
     String address = "localhost";
     int port = 8080;
     ControlPanelCommunicationChannel cpChannel = new ControlPanelCommunicationChannel(logic, address, port);
