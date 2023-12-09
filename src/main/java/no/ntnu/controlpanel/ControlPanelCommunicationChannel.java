@@ -53,7 +53,8 @@ public class ControlPanelCommunicationChannel implements CommunicationChannel {
 	 *
 	 */
 	public void disconnect() {
-		//todo:
+		//TODO
+		communicationClient.onClientDisconnected();
 	}
 
 	private class ControlPanelCommunicationProtocol implements Protocol<Client> {
@@ -81,23 +82,18 @@ public class ControlPanelCommunicationChannel implements CommunicationChannel {
 				logic.onNodeAdded(sensorActuatorNodeInfo);
 
 				updateSensorReadings(nodeInfoMessage.getSource(), nodeInfoMessage.getPayload().getSensors());
-
-				Logger.info(sensorActuatorNodeInfo.getActuators().toString());
 			}
 
 			if (message instanceof ActuatorUpdateMessage actuatorUpdateMessage) {
-				Logger.info("Actuator state change");
 				logic.onActuatorStateChanged(
 					actuatorUpdateMessage.getSource(),
 					actuatorUpdateMessage.getPayload().getId(),
 					actuatorUpdateMessage.getPayload().isNewState()
 				);
-				Logger.info("actuator update");
 			}
 
 			if (message instanceof SensorUpdateMessage sensorUpdateMessage) {
 				updateSensorReadings(sensorUpdateMessage.getSource(), sensorUpdateMessage.getPayload().getSensorInfo());
-				Logger.info("sensor update");
 			}
 
 			if (message instanceof NodeDisconnectMessage nodeDisconnectMessage) {
@@ -142,7 +138,4 @@ public class ControlPanelCommunicationChannel implements CommunicationChannel {
 			return state;
 		}
 	}
-
-
-
 }
