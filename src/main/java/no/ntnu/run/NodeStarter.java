@@ -1,11 +1,6 @@
 package no.ntnu.run;
 
-import java.io.IOException;
-
 import no.ntnu.greenhouse.GreenhouseSimulator;
-import no.ntnu.greenhouse.NodeCommunicationChannel;
-import no.ntnu.greenhouse.SensorActuatorNode;
-import no.ntnu.tools.Logger;
 
 public class NodeStarter {
     /**

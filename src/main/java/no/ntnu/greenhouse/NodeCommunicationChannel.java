@@ -94,7 +94,6 @@ public class NodeCommunicationChannel implements ActuatorListener, SensorListene
 	 */
 	@Override
 	public void onNodeReady(SensorActuatorNode node) {
-		// TODO Auto-generated method stub
 		Logger.info("Ready");
 	}
 
@@ -128,7 +127,7 @@ public class NodeCommunicationChannel implements ActuatorListener, SensorListene
 				sendInfoMessage(message.getSource());
 			}
 			if (message instanceof ActuatorUpdateMessage actuatorUpdateMessage) {
-				Logger.info("actuator change recived");
+				Logger.info("actuator change received");
 				Actuator actuator = node.getActuators().get(actuatorUpdateMessage.getPayload().getId());
 				if (actuatorUpdateMessage.getPayload().isNewState()) {
 					actuator.turnOn();
