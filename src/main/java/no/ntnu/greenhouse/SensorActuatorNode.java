@@ -39,7 +39,6 @@ public class SensorActuatorNode implements ActuatorListener, CommunicationChanne
    * @param id A unique ID of the node
    */
   public SensorActuatorNode(UUID id) {
-    //TODO: Make this not take the ID in the constructor, and instead receive it from the server
     this.id = id;
     this.running = false;
   }

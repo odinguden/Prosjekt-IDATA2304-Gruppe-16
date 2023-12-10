@@ -145,7 +145,6 @@ public class DeviceFactory {
    */
   @Deprecated(since = "2023.1.0", forRemoval = true)
   private static UUID generateUniqueNodeId() {
-    //TODO: Make nodes generate without an ID, and instead get their ID from the server
     return UUID.randomUUID();
   }
 

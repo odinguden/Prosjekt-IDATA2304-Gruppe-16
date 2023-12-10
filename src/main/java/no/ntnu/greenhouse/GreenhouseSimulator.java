@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 import no.ntnu.listeners.greenhouse.NodeStateListener;
-import no.ntnu.run.NodeStarter;
 import no.ntnu.tools.Logger;
 
 /**
@@ -118,7 +117,6 @@ public class GreenhouseSimulator {
       for (SensorActuatorNode node : nodes.values()) {
         node.stop();
       }
-      // TODO - here you stop the TCP/UDP communication
     }
   }
 
