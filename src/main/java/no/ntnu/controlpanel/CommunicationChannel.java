@@ -23,4 +23,6 @@ public interface CommunicationChannel {
    * @return True when the communication channel is successfully opened, false on error
    */
   boolean open();
+
+  boolean close();
 }

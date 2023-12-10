@@ -29,10 +29,6 @@ public class ControlPanelStarter {
    */
   public static void main(String[] args) {
     boolean fake = false;
-    if (args.length == 1 && "fake".equals(args[0])) {
-      fake = true;
-      Logger.info("Using FAKE events");
-    }
     ControlPanelStarter starter = new ControlPanelStarter(fake);
     starter.start();
   }
@@ -43,7 +39,7 @@ public class ControlPanelStarter {
     ControlPanelApplication.startApp(logic, channel);
     // This code is reached only after the GUI-window is closed
     Logger.info("Exiting the control panel application");
-    stopCommunication();
+    stopCommunication(logic);
   }
 
   private CommunicationChannel initiateCommunication(ControlPanelLogic logic, boolean fake) {
@@ -98,7 +94,7 @@ public class ControlPanelStarter {
     return spawner;
   }
 
-  private void stopCommunication() {
-    // TODO - here you stop the TCP/UDP socket communication
+  private void stopCommunication(ControlPanelLogic logic) {
+    logic.closeCommunication();
   }
 }

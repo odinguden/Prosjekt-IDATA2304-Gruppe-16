@@ -52,9 +52,15 @@ public class ControlPanelCommunicationChannel implements CommunicationChannel {
 	 * Notify the server that the Control panel wants to disconnect.
 	 *
 	 */
-	public void disconnect() {
-		//TODO
-		communicationClient.onClientDisconnected();
+	public boolean close() {
+		try {
+			Logger.info("close socket");
+			communicationClient.stopSocketCommunication();
+			return true;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 
 	private class ControlPanelCommunicationProtocol implements Protocol<Client> {

@@ -93,4 +93,11 @@ public class ControlPanelLogic implements GreenhouseEventListener, ActuatorListe
       communicationChannelListener.onCommunicationChannelClosed();
     }
   }
+
+  /**
+   * Closes communication channel
+   */
+  public void closeCommunication() {
+    communicationChannel.close();
+  }
 }

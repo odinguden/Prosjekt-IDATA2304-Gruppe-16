@@ -142,7 +142,7 @@ public class SensorActuatorNode implements ActuatorListener, CommunicationChanne
       Logger.info("-- Stopping simulation of node " + id);
       stopPeriodicSensorReading();
       for (NodeStateListener nodeStateListener : stateListeners) {
-        
+        nodeStateListener.onNodeStopped(this);
       }
       running = false;
       notifyStateChanges(false);
