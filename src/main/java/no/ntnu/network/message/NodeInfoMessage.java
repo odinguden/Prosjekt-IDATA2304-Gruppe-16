@@ -82,9 +82,11 @@ public class NodeInfoMessage extends Message<NodeInfoMessage.NodeInfoPayload> {
 	public static class NodeActuatorInfo implements Serializable{
 		private final String type;
 		private final int actuatorId;
+		private final boolean on;
 		private NodeActuatorInfo(Actuator actuator) {
 			this.type = actuator.getType();
 			this.actuatorId = actuator.getId();
+			this.on = actuator.isOn();
 		}
 
 		public String getType() {
@@ -93,6 +95,10 @@ public class NodeInfoMessage extends Message<NodeInfoMessage.NodeInfoPayload> {
 
 		public int getActuatorId() {
 			return this.actuatorId;
+		}
+
+		public boolean isOn() {
+			return this.on;
 		}
 	}
 }

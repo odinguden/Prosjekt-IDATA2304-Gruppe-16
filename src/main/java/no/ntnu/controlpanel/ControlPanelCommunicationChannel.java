@@ -83,6 +83,7 @@ public class ControlPanelCommunicationChannel implements CommunicationChannel {
 							nodeInfoMessage.getSource()
 							);
 					actuator.setListener(logic);
+					actuator.set(nodeActuatorInfo.isOn());
 					sensorActuatorNodeInfo.addActuator(actuator);
 				}
 				logic.onNodeAdded(sensorActuatorNodeInfo);
