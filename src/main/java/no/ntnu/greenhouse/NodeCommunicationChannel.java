@@ -117,8 +117,7 @@ public class NodeCommunicationChannel implements ActuatorListener, SensorListene
 
 		@Override
 		public void onClientDisconnect(Client caller, UUID sessionId) {
-			disconnect();
-			Logger.error("Client forcefully disconnected");
+			Logger.error("Client disconnected");
 		}
 
 		@Override
