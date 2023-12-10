@@ -18,9 +18,6 @@ distributed application.
 
 ## The underlying transport protocol
 
-TODO - what transport-layer protocol do you use? TCP? UDP? What port number(s)? Why did you
-choose this transport layer protocol?
-
 In the development of the client-server network application, the Transmission Control Protocol (TCP) we choose the transport layer protocol. This choice is based on TCP's characteristics which are well-suited for applications that require reliable, ordered, and error-checked delivery of streams of data. The port numbers for this application are variable, determined at runtime.
 
 Protocol Selection: TCP vs UDP
@@ -42,19 +39,12 @@ The decision to use TCP as the transport layer protocol is driven by the need fo
 
 ## The architecture
 
-TODO - show the general architecture of your network. Which part is a server? Who are clients?
-Do you have one or several servers? Perhaps include a picture here.
-
 The system is built on a singular access point between clients and servers. The general system
 bases itself on a one-to-many relationship from server to clients. The server itself is responsible
 for routing and broadcasting, as well as managing clients's connections. Clients behave
 independent of the server after establishing a connection.
 
 ## The flow of information and events
-
-TODO - describe what each network node does and when. Some periodic events? Some reaction on
-incoming packets? Perhaps split into several subsections, where each subsection describes one
-node type (For example: one subsection for sensor/actuator nodes, one for control panel nodes).
 
 The server starts as without any connections to any clients.
 - When any client connects, the server establishes an independent connection to the client and then
@@ -75,8 +65,6 @@ the server dedicating independent threads to receive messages from each client.
 
 ## Connection and state
 
-TODO - is your communication protocol connection-oriented or connection-less? Is it stateful or
-stateless?
 Our solution is Connection-Oriented because:
 The use of TCP  sockets is a clear indication of a connection-oriented approach. TCP, unlike UDP , requires the establishment of a connection before data is transmitted.
 
@@ -105,9 +93,6 @@ In summary, the solution is connection-oriented because it establishes and maint
 
 
 ## Types, constants
-
-TODO - Do you have some specific value types you use in several messages? They you can describe
-them here.
 
 In the design of our client-server communication framework, we have implemented several specific value types and constants that are consistently used across various messages. These types are fundamental to the operation of our network protocol and ensure a standardized approach to message handling. Key types and constants:
 
@@ -149,9 +134,6 @@ The consistent use of these types and constants across our message communication
 
 ## Message format
 
-TODO - describe the general format of all messages. Then describe specific format for each
-message type in your protocol.
-
 All messages sent on the network are Message objects. The Message class encapsulates a generically
 typed payload, and contains identifiers for the sender and receiver of a message. Messages are not
 sent directly, and instead messages should extend the Message class with a specified payload type
@@ -190,24 +172,61 @@ these messages to control panels to inform them of a change to an actuator's sta
 
 ### Error messages
 
-TODO - describe the possible error messages that nodes can send in your system.
+Server-Side Possible Error Messages
+Connection Establishment Errors:
+
+"Error establishing server socket on port [port number]."
+"Failed to accept client connection."
+"Server socket closed unexpectedly."
+
+Session Management Errors:
+"Session ID was not received properly."
+"Error generating a unique session ID for the client."
+"Client session [session ID] not found for message routing."
+
+I/O and Communication Errors:
+"IOException occurred while reading from client [client ID]."
+"Failed to send message to client [client ID]."
+"Error closing connection with client [client ID]."
+
+Client Disconnection Errors:
+"Client [client ID] disconnected unexpectedly."
+"Error handling client disconnection for [client ID]."
+Server Shutdown Errors:
+"Error while shutting down the server."»
+Failed to close all client connections cleanly."
+
+Client-Side Possible Error Messages
+
+Connection Issues:
+"Unable to connect to server at [server address]:[port]."
+"Connection to server lost."
+"Server connection timed out."
+
+Session ID Issues:
+"No session ID received from server."
+"Error processing session ID from server."
+Message Sending Errors:
+"Failed to send message to server."
+"Client is not connected to any server."
+
+Receiving Message Errors:
+"Error reading message from server."
+"Received message is not in the expected format."
+
+Disconnection and Cleanup Errors:
+"Error closing the client socket."
+"Failed to close input/output streams properly."
+
+General Error Messages (Both Client and Server)
+Serialization Errors:
+"Error serializing the message object."
+"Failed to deserialize the received object."
+Unhandled Exceptions:
+"An unexpected error occurred: [exception details]."
+"Unhandled exception caught in [method or operation]."
 
 ## An example scenario
-
-TODO - describe a typical scenario. How would it look like from communication perspective? When
-are connections established? Which packets are sent? How do nodes react on the packets? An
-example scenario could be as follows:
-1. A sensor node with ID=1 is started. It has a temperature sensor, two humidity sensors. It can
-   also open a window.
-2. A sensor node with ID=2 is started. It has a single temperature sensor and can control two fans
-   and a heater.
-3. A control panel node is started.
-4. Another control panel node is started.
-5. A sensor node with ID=3 is started. It has a two temperature sensors and no actuators.
-6. After 5 seconds all three sensor/actuator nodes broadcast their sensor data.
-7. The user of the first-control panel presses on the button "ON" for the first fan of
-   sensor/actuator node with ID=2.
-8. The user of the second control-panel node presses on the button "turn off all actuators".
 
 1. The server is started.
 2. A new node establishes a connection with the server. It sends a request to get a unique address.
@@ -225,21 +244,22 @@ nodes to get their available data.
 the one from point 2.
 9. The sensor node receives the request, reads off the request's sender's address, and sends a
 message containing the sensor node's actuators and sensor info to that address.
-10. The server receives the message, reads off the destination, and routes the message to the
+10.  The server receives the message, reads off the destination, and routes the message to the
 control panel.
-11. The control panel receives the message, reads its payload, and adds the data to the interface.
+11.  The control panel receives the message, reads its payload, and adds the data to the interface.
 Since the message is from an unknown node, it adds a new tab for the node.
-12. The user uses the control panel's interface to open a window by pressing the checkbox.
-13. The control panel sends a message routed to the sensor node with which the window is associated,
+11.  The user uses the control panel's interface to open a window by pressing the checkbox.
+13.  The control panel sends a message routed to the sensor node with which the window is associated,
 which is then routed by the server similarly to the other messages.
-14. The sensor node receives the message, and opens the window. It then sends a multicast to all
+14.  The sensor node receives the message, and opens the window. It then sends a multicast to all
 connected control panels notifying them of the change.
-15. The sensor node notices that the temperature of the room has changed, and multicasts a sensor
+15.  The sensor node notices that the temperature of the room has changed, and multicasts a sensor
 info message to all control panels on the network, containing information about the sensor change.
-16. The control panel receives the message and updates the data in the interface.
-17. The user goes to the sensor node and shuts it down for the night in order to save power.
-18. The sensor node multicasts its final words to all connected control panels, telling them that
+16.  The control panel receives the message and updates the data in the interface.
+17.  The user goes to the sensor node and shuts it down for the night in order to save power.
+18.  The sensor node multicasts its final words to all connected control panels, telling them that
 it is leaving. The control panel picks up this message and removes it from its interface.
 ## Reliability and security
 
-TODO - describe the reliability and security mechanisms your solution supports.
+Its not the client itself that decide where the messages come from. Its the server.
+We use UUID so each client is assigned a unique session ID (UUID), which helps in reliably tracking and managing client sessions. This is crucial for maintaining the continuity and integrity of each client’s interaction with the server.
