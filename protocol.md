@@ -21,31 +21,24 @@ distributed application.
 TODO - what transport-layer protocol do you use? TCP? UDP? What port number(s)? Why did you
 choose this transport layer protocol?
 
-The Underlying Transport Protocol
+In the development of the client-server network application, the Transmission Control Protocol (TCP) we choose the transport layer protocol. This choice is based on TCP's characteristics which are well-suited for applications that require reliable, ordered, and error-checked delivery of streams of data. The port numbers for this application are variable, determined at runtime.
 
-In our communication system,we strategically utilize both Transmission Control Protocol (TCP) and User Datagram Protocol (UDP) as our transport-layer protocols. This dual-protocol approach is designed to leverage the distinct advantages of each protocol, ensuring efficient and reliable data transmission under varying network conditions.
-TCP:
-Implementation: Our system employs TCP for critical operations where data integrity and order are paramount. This is facilitated through the use of ServerSocket and Socket classes in the server, alongside TCPClientSocket  for the client.
-Port numbers: While specific port number are configurable based on deployment needs,they are essential for establishing TCP connections between the server and the clients.
+Protocol Selection: TCP vs UDP
+Transmission Control Protocol (TCP)
 
-TCP gives us:
-Reliability: TCP connection-oriented nature guarantees that data packet are delivered in the correct order and without loss,which is vital for transaction requiring high data integrity.
-Flow Control: with built-in mechanisms for flow an congestion control,TCP ensures stable communication,preventing network congestion even in high-traffic scenarios.
+Reliability: TCP provides a reliable communication channel, ensuring that all data sent by the client is received by the server, and the same goes for the other way around, without corruption or loss. This is essential for the integrity of the data exchanged in our application.
 
-UDP(User Datagram Protocol)
+Flow Control: TCP manages the rate of data transmission based on network capacity, preventing network congestion and ensuring efficient data transfer.
+Connection-Oriented Nature: TCP establishes a connection before data transmission and maintains it until the communication is complete. This persistent connection is necessary for ongoing interactions between the client and server in our application.
+User Datagram Protocol (UDP)
+While UDP offers faster data transmission rates by eliminating overheads (like handshaking, error recovery), it does not guarantee data delivery, order, or integrity. This makes UDP less suitable where data reliability is a priority.
+We did however almost complete a branch of our solution with both TCP and UDP implementation. Sadly we did not have enough time to merge it into the main branch.
 
-Implementation: For scenarios necessitating quick data transmission,our system incorporates UDP,using DatagramSocket in the server and udpClientSocket in the client.
+Port Number Selection
+Dynamic Assignment: The port numbers for the application are not hardcoded but are assigned dynamically. This approach offers flexibility, allowing the application to operate on different network environments without conflicts with other services.
 
-Port numbers: As with TCp,UDP port numbes are assigned during the setup of the respective sockets,tailored to the specific needs of the application.
-
-UDP gives us:
-Efficiency and Speed: UDP connection-less protocol offers faster data transmission for time-sensitive applications or where high-speed communication is required.
-
-Lower Overhead: with minimal protocol overhead,UDP is more efficient for small data packets and scenarios where occasional packet loss is not critical.
-
-Conclusion:
-
-The combinations of TCP and UDP in our communication protocol presents a versatile framework capable of handling a wide range of communication needs. TCP is leveraged for operations demanding high reliability and data integrity, while UDP is utilized for its efficiency and speed,particularly in less critical or real-time scenarios. The flexibility in choosing port numbers allows our system to be adaptable and efficient.
+Conclusion
+The decision to use TCP as the transport layer protocol is driven by the need for reliable, ordered, and error-checked communication between the client and server. The flexible approach to port number selection further ensures that the application can adapt to various network configurations.
 
 ## The architecture
 
@@ -84,29 +77,31 @@ the server dedicating independent threads to receive messages from each client.
 
 TODO - is your communication protocol connection-oriented or connection-less? Is it stateful or
 stateless?
+Our solution is Connection-Oriented because:
+The use of TCP  sockets is a clear indication of a connection-oriented approach. TCP, unlike UDP , requires the establishment of a connection before data is transmitted.
 
-Connection- Oriented and Connection-Less characteristics
-Our communication protocol uses a dual nature:
-Connection-oriented (TCP):
-the protocol leverages TCP (Transmission Control Protocol) for certain interactions. This is evident from the use of ServerSocket and Socket class in the server implementation and TcpClientSocket in the client implementation.
+In our code, both the client (Client) and server (Server) utilize these TCP sockets to establish communication. 
+The client creates a socket to connect to the server, and the server listens for incoming connections on a ServerSocket and then accepts them.
 
-TCP,known for its reliability and sequence ordered data transmission, requires establishing a connection before any data exchange. This is reflected in our protocol method of handling TCP connections (HandleTCPConnection), which deals with the intricacies of client-server communication over TCP.
+Dedicated Connection Management:
+The server class manages each client connection individually. Upon accepting a new client connection, it creates a new instance of ServerConnection, dedicated to handling communication with that specific client.
+This is a classic example of connection-oriented protocols, where each client-server pair maintains an individual, persistent connection.
 
-Connection-Less (UDP)
-In parallel,the protocol incorporates UDP(User Datagram Protocol) functionalities. This is apparent from the utilization of DatagramSocket in the server and and UdpClientSocket in the client.
+Stateful
+Session Management with UUIDs:
+The system assigns a unique UUID to each client session. This UUID is used to identify and manage each client throughout their session.
+The maintenance of session IDs allows the server to keep track of each individual clients state, which is crucial for stateful operations.
 
-UDP is a connection less protocol,characterized by sending data in discrete packets without establishing a persistent connection. The method handleUdpPacket in the server handles these UDP packets,adhering to the connection-less orientation.
+State-Aware Interactions:
+The servers capability to broadcast messages to all clients or route messages to specific clients based on their UUID demonstrates state awareness. 
+This would not be possible in a stateless protocol where each message/request would be treated independently without any context of past interactions.
 
-Stateful or Stateless
-
-Our communication protocol is designed to be stateful:
-it maintains session information and connections states, primarily through the use of unique UUIDs for each session. this is observable in the server management of TCP connections and UDP client sessions.
-The stateful nature is further reinforced by methods like registerIncomingMessage and route,which process messages based on the stored session information and previous interactions.
-
-The protocols ability to track and manage ongoing client interactions indicates a departure from a stateless design, where each request is independent.
+Handling Connection Lifecycle Events:
+The protocol interface includes methods like onClientConnect, onClientDisconnect, and receiveMessage. 
+These methods are designed to respond to specific events in the lifecycle of a client connection, indicating that the server is keeping track of the state of each connection.
 
 Conclusion
-In summary,our communication protocol integrates both connection-oriented (TCP) and connection-less (UDP) communication strategies. This hybrid approach allows it to leverage the strengths of both TCP (reliability and order) And UDP(efficiency and speed). Additionally,the protocol is stateful,maintaining essential information about client session and interactions,which enables more complex and continuos communication processes.
+In summary, the solution is connection-oriented because it establishes and maintains dedicated connections between the server and each client using TCP sockets. It is stateful as it manages and tracks the state of each client through unique session IDs and responds to state changes and events specific to each client.
 
 
 ## Types, constants
@@ -114,24 +109,44 @@ In summary,our communication protocol integrates both connection-oriented (TCP) 
 TODO - Do you have some specific value types you use in several messages? They you can describe
 them here.
 
-Specific Value Types in Message Communication
-In our communication protocol,we utilize specific value types across several messages to ensure consistency and robustness in data transmission. These value types are essential for maintaining the integrity and clarity of communication between the server and client.
+In the design of our client-server communication framework, we have implemented several specific value types and constants that are consistently used across various messages. These types are fundamental to the operation of our network protocol and ensure a standardized approach to message handling. Key types and constants:
 
-UUID (Universally unique identifier):
-Source and Destination identification: Each message contains a source and destination field,both of which are UUIDs. The source UUID is sent server-side to ensure global recognition,while the destination UUID specifies the intended  recipient of the message.
+1. Universal Unique Identifier (UUID)
+Usage: Both as source and destination in the Message class.
 
-Session Management: UUIDs play a crucial role in session management. They are used to uniquely identify client session,facilitating precise and secure communication across the network.
+Purpose: Provides a unique identifier for each client within the network. This is crucial for accurately routing messages between clients and the server.
 
-Serializable Payload:
-Flexible Data Handling: The payload of a message,represented by the payload field,is of a generic type T that extends Serializable. This design allows for a wide range of data types to be transmitted as the message content, provided they implement the Serializable interface.
+Characteristics: A UUID is a 128-bit number used to identify information in computer systems. In our framework, it ensures that each client-server interaction is distinct and traceable.
 
-Data Integrity: The use of Serializable objects ensures that the data can be reliably sent over the network and reconstructed at the receiving end without loss of information or structure.
+2. Generic Payload (T extends Serializable)
+Usage: As the payload in the Message<T> class.
 
-Message Flags (isUDP)
-Protocol Selection: Additional flags like isUdp in the Message class indicate whether the message should be sent over a UDP connection. This allows the protocol to dynamically choose between TCP and UDP based on the nature of the message,optimizing communication efficiency.
+Purpose: To encapsulate the data being transmitted in a message. The generic type T allows for flexibility in the type of data transmitted, as long as it conforms to Java's serialization mechanism.
 
-Specialized Message Types (UuidMessage)
-Targeted Functionality. The UuidMessage class, a specialized form of Message<UUID>,is used for specific scenarios like transmitting session IDs. This specialization streamlines certain communication processes,ensuring they are handled with the appropriate data type and methods.
+Characteristics: This approach allows our communication framework to be adaptable and extendable to various data types, ranging from simple strings to complex data structures, provided they are serializable.
+
+3. Message Class (Message<T extends Serializable>)
+
+Components:
+
+UUID source: Identifies the sender of the message.
+
+UUID destination: specifies the intended recipient of the message.
+
+T payload: Contains the actual data/message to be transmitted.
+
+Purpose:
+ Serves as a blueprint for all messages transmitted within our network, ensuring a consistent structure that includes sender, receiver, and the message content.
+
+4. UuidMessage Class
+
+Description: A specialized form of Message<UUID> used specifically for transmitting a UUID as the payload.
+
+Purpose: Primarily used for sending a client's UUID from the server to the client upon establishing a connection. It plays a crucial role in client identification and session management.
+
+Conclusion
+The consistent use of these types and constants across our message communications ensures a robust and flexible system. UUIDs provide a reliable way of identifying clients and routing messages, while the generic payload design allows our system to handle a wide variety of data types. The Message and UuidMessage classes provide structured formats for all communications, facilitating clear and efficient message handling within our client-server architecture.
+
 ## Message format
 
 TODO - describe the general format of all messages. Then describe specific format for each
